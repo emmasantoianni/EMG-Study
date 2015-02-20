@@ -1,5 +1,5 @@
 function [ f, femg, nfft ] = fourier( signal, Fs )
-%FOURIER Summary of this function goes here
+%FOURIER Perform Fourier transform on EMG signal
 %   Detailed explanation goes here
 
 len = length(signal);
