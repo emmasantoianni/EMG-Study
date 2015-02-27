@@ -14,22 +14,30 @@ fclose(fid);
 wave = rawData(:, 1);
 figure
 plot(wave);
+title 'original wave'
 
 Fs = 10000;
 [f, fLMS, nfft] = fourier(wave, Fs);
 
 startFreq = round(50 / f(2)); % disregard low frequency region
+figure
 plot(f(startFreq: end), 2*abs(fLMS(startFreq: nfft/2+1)));
+title 'Fourier transform of original wave'
 
 %% High pass
 sigma = 100;
-wave1 = highPass(wave, Fs, sigma);
+% The higher scaling const is, the more precise will the later stage be
+% since the transition matrix is based on rounded integer signal strength
+wave1 = highPass(wave, Fs, sigma) * 1e4;
+figure
 plot(wave1);
+title 'after high pass'
 
 %% noise
 noiseSample = wave(1000: 4500);
 figure
 plot(noiseSample);
+title 'EMG noise plot'
 
 [f, fLMS, nfft] = fourier(noiseSample, Fs);
 startFreq = round(50 / f(2));
@@ -41,6 +49,7 @@ title 'noise Fourier transform'
 emgSample = wave(5000: 6800);
 figure
 plot(emgSample);
+title 'EMG signal plot'
 
 [f, fLMS, nfft] = fourier(emgSample, Fs);
 startFreq = round(50 / f(2));
