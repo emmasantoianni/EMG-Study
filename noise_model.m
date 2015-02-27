@@ -1,3 +1,5 @@
+close all
+
 %% Known regions of noise
 noiseIntervals = [8077, 9079; 12685, 16654; 19110, 21555; ...
     23765, 25641; 27810, 29482; 31475, 34075; 39207, 43350; ...
@@ -30,20 +32,25 @@ plot(noise);
 %noise = wave1;
 
 % need to scale noise and round it
-noise = round(noise * 1e5);
+noise = round(noise);
 diffNoise = diff(noise);
 diffNoise = diffNoise - min(diffNoise) + 1;
 plot(noise);
 % transition
-n = max(diffNoise);
+n = round(max(diffNoise));
 TM = zeros(n, n);
+% the coordinates of each point is the consecutive diffNoise values
+points = zeros(2, length(diffNoise) - 1);
 for i = 1: length(diffNoise) - 1
     curr = diffNoise(i);
     next = diffNoise(i + 1);
+    points(:, i) = [curr; next];
+    
+    curr = round(curr); 
+    next = round(next);
     TM(curr, next) = TM(curr, next) + 1;
 end
 figure
-%surf(TM, 'LineWidth',0);
 surf(TM);
 
 % x = diffNoise < 322 & diffNoise > 288;
