@@ -19,7 +19,8 @@ cutoff = 50;
 scale = 1e5;
 
 [b, a] = butter(3, cutoff /Fs * 2, 'high');
-signal = filter(b, a, signal) / scale;
+% filtfilt: zero-phase filtering
+signal = filtfilt(b, a, signal) / scale;
 
 end
 

@@ -104,8 +104,19 @@ end
 
 figure
 plot(p)
+title 'Raw unnormalized probability');
+
 figure
 plot(wave1)
+
+%% Windowing
+windowSize = 11;
+f = ones(windowSize, 1);
+f = f / sum(f);
+pw = conv(p, f);
+
+figure
+plot(pw)
 
 % numNoiseRegions = 0;
 % noiseRegions = zeros(100, 2);clo
