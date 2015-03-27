@@ -29,6 +29,7 @@ sigma = 100;
 % The higher scaling const is, the more precise will the later stage be
 % since the transition matrix is based on rounded integer signal strength
 wave1 = highPass(wave, Fs, sigma) * 1e5;
+
 figure
 plot(wave1);
 title 'after high pass'
