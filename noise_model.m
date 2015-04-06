@@ -1,20 +1,24 @@
 close all
 
+extremaOnly = true;
+
 %% Known regions of noise
 noiseIntervals = [8077, 9079; 12685, 16654; 19110, 21555; ...
     23765, 25641; 27810, 29482; 31475, 34075; 39207, 43350; ...
-    46366, 50442; 53944, 57694; 60473, 63119; 65967, 67801; ...
+    46366, 50400; 53944, 57694; 60473, 63119; 65967, 67801; ...
     68178, 70163; 72893, 73823; 76333, 78476; 80640, 82557; ...
     86985, 89814];
 
-noise = [];
-time = [];
-for i = 1: size(noiseIntervals, 1)
-    noise = [noise; wave1(noiseIntervals(i, 1): noiseIntervals(i, 2))];
-    time = [time; (noiseIntervals(i, 1): noiseIntervals(i, 2))'];
-end
 figure
-plot(noise);
+hold on
+noiseAll = [];
+for i = 1: size(noiseIntervals, 1)
+    noise = wave1(noiseIntervals(i, 1): noiseIntervals(i, 2));
+    time = (noiseIntervals(i, 1): noiseIntervals(i, 2))';
+    plot(time, noise);
+    noiseAll = [noiseAll; noise];
+end
+hold off
 
 % sigma = 100;
 % noise1 = highPass(wave(noiseIntervals(7, 1): noiseIntervals(7, 2)), Fs, sigma);
@@ -31,30 +35,38 @@ plot(noise);
 %noise = wave1(range(1): range(2));
 %noise = wave1;
 
+% optional: simplify by removing consecutive 
+if extremaOnly
+    noiseAll = extractExtrema(noiseAll);
+    [wave2, inds] = extractExtrema(wave1);
+else
+    wave2 = wave1;
+    inds = 1: length(wave2);
+end
+
 % need to scale noise and round it
-%noise = round(noise);
-% diffNoise = diff(noise);
-% d = diff(sort(unique(diffNoise)));
-% r = d(1); % discrete step
-% wave1 = wave1 / r;
-diffNoise = diff(round(noise));
+diffNoise = diff(round(noiseAll));
 diffOffset = min(diffNoise) - 1;
-diffNoise = diffNoise - diffOffset; % to make index positive
-%plot(diffNoise);
-% transition
-n = round(max(diffNoise));
+n = round(max(diffNoise - diffOffset));
 TM = zeros(n, n);
-% the coordinates of each point is the consecutive diffNoise values
-points = zeros(2, length(diffNoise) - 1);
-for i = 1: length(diffNoise) - 1
-    curr = diffNoise(i);
-    next = diffNoise(i + 1);
-    points(:, i) = [curr; next];
-    TM(round(curr), round(next)) = TM(curr, next) + 1;
+for i = 1: length(noiseIntervals)
+    noise = wave1(noiseIntervals(i, 1): noiseIntervals(i, 2));
+    
+    diffNoise = diff(round(noise)) - diffOffset;
+    %plot(diffNoise);
+    % transition
+
+    % the coordinates of each point is the consecutive diffNoise values
+    points = zeros(2, length(diffNoise) - 1);
+    for j = 1: length(diffNoise) - 1
+        curr = diffNoise(j);
+        next = diffNoise(j + 1);
+        points(:, j) = [curr; next];
+        TM(round(curr), round(next)) = TM(curr, next) + 1;
+    end
 end
 figure
 surf(TM);
-figure
 scatter(points(1, :), points(2, :), '.');
 mu = mean(points, 2);
 sigma = cov(points');
@@ -65,7 +77,7 @@ if ~exist('reRun', 'var')
     reRun = true;
 end
 
-diffWave = diff(wave1) - diffOffset;
+diffWave = diff(wave2) - diffOffset;
 if reRun
     TMall = java.util.HashMap;
     for i = 1: length(diffWave) - 1
@@ -79,7 +91,11 @@ if reRun
     end
     reRun = false;
 else
-    load TMall;
+    if extremaOnly
+        load TMall1;
+    else
+        load TMall;
+    end
 end
 
 disp('Computing probability for entire sequence ...');
@@ -103,7 +119,10 @@ for i = 1: length(diffWave) - 1
 end
 
 figure
-plot(p)
+subplot(2, 1, 1);
+plot(inds(1: end - 1), p);
+subplot(2, 1, 2);
+plot(inds(1: end - 1), log(p + eps));
 figure
 plot(wave1)
 
