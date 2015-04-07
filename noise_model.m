@@ -119,12 +119,24 @@ for i = 1: length(diffWave) - 1
 end
 
 figure
+
 subplot(2, 1, 1);
 plot(inds(1: end - 1), p); % last point not calculated
+title 'Raw unnormalized probability');
 subplot(2, 1, 2);
 plot(inds(1: end - 1), log(p + eps));
+
 figure
 plot(wave1)
+
+%% Windowing
+windowSize = 11;
+f = ones(windowSize, 1);
+f = f / sum(f);
+pw = conv(p, f);
+
+figure
+plot(pw)
 
 % numNoiseRegions = 0;
 % noiseRegions = zeros(100, 2);clo
