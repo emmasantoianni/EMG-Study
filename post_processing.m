@@ -9,7 +9,7 @@
 % left and right window size
 lwSize = 40;
 rwSize = 40;
-threshold = 2;
+threshold = 1.5;
 
 lscore = zeros(size(p));
 rscore = zeros(size(p));
@@ -20,4 +20,9 @@ for i = lwSize + 1: length(p) - rwSize
     lscore(i) = sum(l <= threshold);
     rscore(i) = sum(r <= threshold);
 end
-plot(1: length(p), lscore);
+
+figure
+subplot(2, 1, 1);
+plot(inds(1: end - 1), lscore);
+subplot(2, 1, 2);
+plot(inds(1: end - 1), lscore - rscore);

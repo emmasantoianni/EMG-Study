@@ -1,6 +1,6 @@
 close all
 
-extremaOnly = true;
+extremaOnly = false;
 
 %% Known regions of noise
 noiseIntervals = [8077, 9079; 12685, 16654; 19110, 21555; ...
@@ -120,7 +120,7 @@ end
 
 figure
 subplot(2, 1, 1);
-plot(inds(1: end - 1), p);
+plot(inds(1: end - 1), p); % last point not calculated
 subplot(2, 1, 2);
 plot(inds(1: end - 1), log(p + eps));
 figure
