@@ -2,10 +2,14 @@ close all
 clear all
 
 %% Load data
+%filename = 'data/GA7-15-98RPEARF.csv';
+%filename = 'data/GA8-4-98LHPCF.csv';
+filename = 'data/MK3-7-96LAF.csv';
 
-rawData = csvread('data/GA7-15-98RPEARF.csv', 1, 0);
+%rawData = csvread(, 1, 0);
+rawData = csvread(filename, 1, 0);
 
-fid = fopen('data/GA7-15-98RPEARF.csv');
+fid = fopen(filename);
 header = textscan(fid,'%s %s %s %s %s %s %s %s', 1, 'delimiter',',');
 fclose(fid);
 

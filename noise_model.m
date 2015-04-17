@@ -30,7 +30,7 @@ hold off
 % plot(wave1(noiseIntervals(7, 1): noiseIntervals(7, 2)));
 % title('high pass followed by noise extraction');
 
-%% Model
+%% Model params
 %range = [6000, 15000];
 %noise = wave1(range(1): range(2));
 %noise = wave1;
@@ -44,6 +44,9 @@ else
     inds = 1: length(wave2);
 end
 
+%roughNoise(wave1);
+
+%% Transition matrix
 % need to scale noise and round it
 diffNoise = diff(round(noiseAll));
 diffOffset = min(diffNoise) - 1;
