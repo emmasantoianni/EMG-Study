@@ -25,4 +25,6 @@ figure
 subplot(2, 1, 1);
 plot(inds(1: end - 1), lscore);
 subplot(2, 1, 2);
+posterior = lscore - rscore;
 plot(inds(1: end - 1), lscore - rscore);
+csvwrite('data/GA7-15-98RPEARF-posterior.csv', posterior);
