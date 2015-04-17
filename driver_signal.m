@@ -2,9 +2,9 @@ close all
 clear all
 
 %% Load data
-%filename = 'data/GA7-15-98RPEARF.csv';
+filename = 'data/GA7-15-98RPEARF.csv';
 %filename = 'data/GA8-4-98LHPCF.csv';
-filename = 'data/MK3-7-96LAF.csv';
+%filename = 'data/MK3-7-96LAF.csv';
 
 %rawData = csvread(, 1, 0);
 rawData = csvread(filename, 1, 0);

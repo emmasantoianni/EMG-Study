@@ -44,7 +44,7 @@ else
     inds = 1: length(wave2);
 end
 
-%roughNoise(wave1);
+
 
 %% Transition matrix
 % need to scale noise and round it

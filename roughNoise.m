@@ -20,12 +20,16 @@ for i = 1: step: k
     count = count + 1;
     numIntersect(count) = sum(emg > (i - 1) & emg < i);
 end
-figure
+diffNum = diff(numIntersect);
 
+figure
 hold on
-plot(1: step: k, numIntersect);
-plot(1: step: (k-step) + step / 2, diff(numIntersect) / step);
+plot(1: step: k, numIntersect, 'b');
+plot(1: step: (k-step) + step / 2, diffNum / step, 'm');
+legend('number of intersections', 'derivative');
 hold off
+
+threshold = min(diffNum);
 noiseRegions = 0;
 end
 
