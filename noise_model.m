@@ -40,10 +40,11 @@ hold off
 
 %% Approximate rough noise regions (conservative)
 
-approxNoiseIntervals = roughNoise(wave2, inds);
+hwSize = 15;
+approxNoiseIntervals = roughNoise(wave2, inds, hwSize);
 
 figure
-title('Approximate noise intervals');
+title(sprintf('Approximate noise intervals with window size %d', hwSize*2 + 1));
 hold on
 noiseAll = [];
 for i = 1: size(approxNoiseIntervals, 1)
@@ -53,6 +54,7 @@ for i = 1: size(approxNoiseIntervals, 1)
     noiseAll = [noiseAll; noise];
 end
 hold off
+noiseIntervals = approxNoiseIntervals;
 
 %% Model params
 %range = [6000, 15000];

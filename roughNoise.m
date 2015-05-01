@@ -1,4 +1,4 @@
-function [ noiseIntervals ] = roughNoise( emg, inds )
+function [ noiseIntervals ] = roughNoise( emg, inds, hwSize )
 %ROUGHNOISE Roughly identify the noise region used to build noise model
 %   
 %   Return: 
@@ -12,7 +12,7 @@ function [ noiseIntervals ] = roughNoise( emg, inds )
 %
 
 % TODO: multiscale
-hwSize = 11;
+
 emg = integrateEMG(emg, hwSize);
 
 figure
@@ -39,7 +39,7 @@ legend('number of intersections', 'derivative');
 hold off
 
 [~, ind] = min(diffNum);
-tolerance = 0.3;
+tolerance = 0.2;
 threshold = ind * step + 1 - step/2 + tolerance;
 fprintf('Threshold set at: %d\n', threshold);
 
