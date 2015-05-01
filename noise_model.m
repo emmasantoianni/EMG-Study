@@ -38,7 +38,8 @@ hold off
 % title('high pass followed by noise extraction');
 
 %% Approximate rough noise regions (conservative)
-noiseRegions = roughNoise(wave1, inds);
+
+noiseRegions = roughNoise(wave2, inds);
 
 %% Model params
 %range = [6000, 15000];

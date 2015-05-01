@@ -1,4 +1,4 @@
-function [ noiseRegions ] = roughNoise( emg, inds )
+function [ noiseIntervals ] = roughNoise( emg, inds )
 %ROUGHNOISE Roughly identify the noise region used to build noise model
 %   
 %   Return: 
@@ -13,14 +13,17 @@ function [ noiseRegions ] = roughNoise( emg, inds )
 
 % TODO: multiscale
 hwSize = 11;
-emg = integrateEMG(emg, 11);
+emg = integrateEMG(emg, hwSize);
 
 figure
 plot(inds(hwSize + (1: length(emg))), emg);
 
-k = 25;
+lb = 1;
+ub = 25;
+% k: number of moving horizontal lines tried
+k = ub - lb;
 step = 0.1; 
-numIntersect = zeros((k-1) / step + 1);
+numIntersect = zeros(k / step + 1, 1);
 count = 0;
 for i = 1: step: k
     count = count + 1;
@@ -30,14 +33,31 @@ diffNum = diff(numIntersect);
 
 figure
 hold on
-plot(1: step: k, numIntersect, 'b');
-plot(1: step: (k-step) + step / 2, diffNum / step, 'm');
+plot(1: step: ub, numIntersect, 'b');
+plot((1: step: ub - step) + step / 2, diffNum / step, 'm');
 legend('number of intersections', 'derivative');
 hold off
 
-threshold = min(diffNum);
+[~, ind] = min(diffNum);
+threshold = ind * step + 1 - step/2;
 fprintf('Threshold set at: %d\n', threshold);
 
-noiseRegions = 0;
+%% use threshold to find noise regions
+
+isNoise = emg < threshold;
+if ~isrow(isNoise)
+    isNoise = isNoise';
+end
+% a noise region has to be of length at least minDuration
+minDuration = 200;
+
+diffNoise = diff([0, isNoise, 0]);
+startIndex = find(diffNoise < 0);
+endIndex = find(diffNoise > 0) - 1;
+duration = endIndex-startIndex+1;
+
+
+noiseIntervals = 0;
+
 end
 
