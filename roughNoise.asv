@@ -16,7 +16,7 @@ hwSize = 11;
 emg = integrateEMG(emg, 11);
 
 figure
-plot(inds(hwSize + (1: length(emg))), emg);
+plot(inds(hwSize + 1: length(emg) - hwSize));
 
 k = 25;
 step = 0.1; 
@@ -36,7 +36,7 @@ legend('number of intersections', 'derivative');
 hold off
 
 threshold = min(diffNum);
-fprintf('Threshold set at: %d\n', threshold);
+fprintf('Threshold set at: %d', threshold);
 
 noiseRegions = 0;
 end

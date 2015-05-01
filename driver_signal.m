@@ -61,3 +61,6 @@ startFreq = round(50 / f(2));
 figure
 plot(f(startFreq: end), 2*abs(fLMS(startFreq: nfft/2+1)));
 title 'EMG signal Fourier transform'
+
+
+

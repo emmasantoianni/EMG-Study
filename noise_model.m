@@ -2,6 +2,13 @@ close all
 
 extremaOnly = false;
 
+if extremaOnly
+    [wave2, inds] = extractExtrema(wave1);
+else
+    wave2 = wave1;
+    inds = 1: length(wave2);
+end
+
 %% Known regions of noise
 noiseIntervals = [8077, 9079; 12685, 16654; 19110, 21555; ...
     23765, 25641; 27810, 29482; 31475, 34075; 39207, 43350; ...
@@ -30,6 +37,9 @@ hold off
 % plot(wave1(noiseIntervals(7, 1): noiseIntervals(7, 2)));
 % title('high pass followed by noise extraction');
 
+%% Approximate rough noise regions (conservative)
+noiseRegions = roughNoise(wave1, inds);
+
 %% Model params
 %range = [6000, 15000];
 %noise = wave1(range(1): range(2));
@@ -43,7 +53,6 @@ else
     wave2 = wave1;
     inds = 1: length(wave2);
 end
-
 
 
 %% Transition matrix
@@ -125,7 +134,7 @@ figure
 
 subplot(2, 1, 1);
 plot(inds(1: end - 1), p); % last point not calculated
-title 'Raw unnormalized probability');
+title('Raw unnormalized probability');
 subplot(2, 1, 2);
 plot(inds(1: end - 1), log(p + eps));
 
@@ -140,14 +149,4 @@ pw = conv(p, f);
 
 figure
 plot(pw)
-
-% numNoiseRegions = 0;
-% noiseRegions = zeros(100, 2);clo
-% threshold = 50;
-% avg = mean(wave1);
-% isNoise = false;
-% for i = 1: length(wave1)
-%     % is in noise threshold reagion
-%     if wave1(i) >= avg - threshold && wave1(i) <= avg + threshold
-%         if ~isNoise
-%             
+title('Posterior with window size 11');
