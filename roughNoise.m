@@ -39,7 +39,8 @@ legend('number of intersections', 'derivative');
 hold off
 
 [~, ind] = min(diffNum);
-threshold = ind * step + 1 - step/2;
+tolerance = 0.3;
+threshold = ind * step + 1 - step/2 + tolerance;
 fprintf('Threshold set at: %d\n', threshold);
 
 %% use threshold to find noise regions
@@ -49,15 +50,18 @@ if ~isrow(isNoise)
     isNoise = isNoise';
 end
 % a noise region has to be of length at least minDuration
-minDuration = 200;
+minDuration = 500;
 
 diffNoise = diff([0, isNoise, 0]);
-startIndex = find(diffNoise < 0);
-endIndex = find(diffNoise > 0) - 1;
+startIndex = find(diffNoise > 0);
+endIndex = find(diffNoise < 0) - 1;
 duration = endIndex-startIndex+1;
 
+rmIntervals = duration < minDuration;
+startIndex(rmIntervals) = [];
+endIndex(rmIntervals) = [];
 
-noiseIntervals = 0;
+noiseIntervals = [startIndex', endIndex'];
 
 end
 

@@ -1,58 +1,6 @@
-close all
-
-extremaOnly = false;
-
-if extremaOnly
-    [wave2, inds] = extractExtrema(wave1);
-else
-    wave2 = wave1;
-    inds = 1: length(wave2);
-end
-
-%% Known regions of noise
-noiseIntervals = [8077, 9079; 12685, 16654; 19110, 21555; ...
-    23765, 25641; 27810, 29482; 31475, 34075; 39207, 43350; ...
-    46366, 50400; 53944, 57694; 60473, 63119; 65967, 67801; ...
-    68178, 70163; 72893, 73823; 76333, 78476; 80640, 82557; ...
-    86985, 89814];
-
-figure
-title('Pre-identified noise intervals');
-hold on
-noiseAll = [];
-for i = 1: size(noiseIntervals, 1)
-    noise = wave1(noiseIntervals(i, 1): noiseIntervals(i, 2));
-    time = (noiseIntervals(i, 1): noiseIntervals(i, 2))';
-    plot(time, noise);
-    noiseAll = [noiseAll; noise];
-end
-hold off
-
-% sigma = 100;
-% noise1 = highPass(wave(noiseIntervals(7, 1): noiseIntervals(7, 2)), Fs, sigma);
-% figure
-% plot(noise1);
-% title('noise extraction followed by high pass');
-
-% figure
-% plot(wave1(noiseIntervals(7, 1): noiseIntervals(7, 2)));
-% title('high pass followed by noise extraction');
-
-%% Approximate rough noise regions (conservative)
-
-approxNoiseIntervals = roughNoise(wave2, inds);
-
-figure
-title('Approximate noise intervals');
-hold on
-noiseAll = [];
-for i = 1: size(approxNoiseIntervals, 1)
-    noise = wave1(approxNoiseIntervals(i, 1): approxNoiseIntervals(i, 2));
-    time = (approxNoiseIntervals(i, 1): approxNoiseIntervals(i, 2))';
-    plot(time, noise);
-    noiseAll = [noiseAll; noise];
-end
-hold off
+function [ p ] = noiseModel( wave1, extremaOnly )
+%NOISEMODEL Noise model using bigrams
+%   Detailed explanation goes here
 
 %% Model params
 %range = [6000, 15000];
@@ -164,3 +112,6 @@ pw = conv(p, f);
 figure
 plot(pw)
 title('Posterior with window size 11');
+
+end
+
