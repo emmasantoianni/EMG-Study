@@ -148,14 +148,16 @@ end
 
 figure
 
-subplot(2, 1, 1);
+subplot(3, 1, 1);
 plot(inds(1: end - 1), p); % last point not calculated
 title('Raw unnormalized probability');
-subplot(2, 1, 2);
+subplot(3, 1, 2);
 plot(inds(1: end - 1), log(p + eps));
+ylabel('log scale');
 
-figure
+subplot(3, 1, 3);
 plot(wave1)
+ylabel('original signal');
 
 %% Windowing
 windowSize = 11;

@@ -33,14 +33,11 @@ csvwrite('data/GA7-15-98RPEARF-posterior.csv', posterior);
 %% Isolate signal regions
 
 % posterior threshold
-postThresh = 3;
+postThresh = 4;
 
 % we allow this amount of zero entries within the signal. If the gap is
 % larger than that, we split the signal into two.
-allowedGap = wSize * 2;
-
-% sign does not matter here
-posterior = abs(posterior);
+allowedGap = wSize;
 
 nSignalRegions = 0;
 onsets = zeros(length(posterior), 1);
@@ -53,10 +50,8 @@ for i = 1: length(posterior) - allowedGap
         inSignal = true;
         nSignalRegions = nSignalRegions + 1;
         onsets(nSignalRegions) = i;
-    % transfer out of signal region:
-    % When the values are less than 4 in allowed gap, followed by a
-    % sequence of zeros
-    elseif inSignal && ~any(seg >= postThresh) && ~any(posterior(i + allowedGap: i + 2*allowedGap))
+    % transfer out of signal region
+    elseif inSignal && ~sum(seg >= postThresh)
         inSignal = false;
         
         % if the length of this detected signal is too insignificant,
@@ -72,28 +67,11 @@ end
 if inSignal
     offsets(nSignalRegions) = length(posterior);
 end
-onsets = onsets(1: nSignalRegions);
-offsets = offsets(1: nSignalRegions);
+onsets = onsets(1: nSign
 
 %% visualize
 figure
-subplot(2, 1, 1);
-hold on
 for i = 1: nSignalRegions
-    if i == 1
-        plot(1: onsets(i) - 1, wave2(1: onsets(i) - 1), 'b');
-    else
-        plot(offsets(i-1) + 1: onsets(i) - 1, wave2(offsets(i-1) + 1: onsets(i) - 1), 'b');
-    end
-    plot(onsets(i): offsets(i), wave2(onsets(i): offsets(i)), 'r');
+    plot(wave2(1: onsets(i) - 1), 'b');
+    plot(wave2(onsets(i): offsets(i)), 'r');
 end
-if offsets(nSignalRegions) <= length(posterior)
-    tmpInds = offsets(nSignalRegions-1) + 1: length(posterior);
-    plot(tmpInds, wave2(tmpInds), 'b');
-end
-
-hold off
-title('singals classified');
-
-subplot(2, 1, 2);
-plot(wave2);
