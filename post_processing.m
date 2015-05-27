@@ -76,24 +76,55 @@ onsets = onsets(1: nSignalRegions);
 offsets = offsets(1: nSignalRegions);
 
 %% visualize
-figure
-subplot(2, 1, 1);
-hold on
-for i = 1: nSignalRegions
-    if i == 1
-        plot(1: onsets(i) - 1, wave2(1: onsets(i) - 1), 'b');
+visualizeResults( wave2, onsets, offsets, nSignalRegions );
+
+
+%% Merge chewing cycles / remove outliers
+signalLengths = offsets - onsets;
+
+signalLenThresh = 1000;
+intervalThresh = mean(signalLengths) - 0.5 * std(signalLengths);
+
+ind = 2;
+while ind <= length(onsets)
+    if signalLengths(ind-1) < signalLenThresh && signalLengths(ind) > signalLenThresh && ...
+            onsets(ind) - offsets(ind-1) < intervalThresh
+        offsets(ind-1) = offsets(ind);
+        signalLengths(ind-1) = offsets(ind-1) - onsets(ind-1);
+        
+        signalLengths(ind) = [];
+        onsets(ind) = [];
+        offsets(ind) = [];
     else
-        plot(offsets(i-1) + 1: onsets(i) - 1, wave2(offsets(i-1) + 1: onsets(i) - 1), 'b');
+        ind = ind + 1;
     end
-    plot(onsets(i): offsets(i), wave2(onsets(i): offsets(i)), 'r');
-end
-if offsets(nSignalRegions) <= length(posterior)
-    tmpInds = offsets(nSignalRegions-1) + 1: length(posterior);
-    plot(tmpInds, wave2(tmpInds), 'b');
 end
 
-hold off
-title('singals classified');
+% update based on onsets/offsets
+nSignalRegions = ind - 1;
 
-subplot(2, 1, 2);
-plot(wave2);
+hist(signalLengths);
+%%
+mu = mean(signalLengths);
+sigma = std(signalLengths);
+
+% mean amplitude
+meanAmp = zeros(size(signalLengths));
+for i = 1: length(signalLengths)
+    meanAmp(i) = mean(abs(wave2(onsets(i): offsets(i))));
+end
+muMeanAmp = mean(meanAmp);
+threshAmp = muMeanAmp - std(meanAmp);
+
+signalRegionCategories = zeros(size(signalLengths));
+for i = 1: length(signalLengths)
+    if meanAmp(i) < threshAmp
+        signalRegionCategories(i) = 2;
+    elseif signalLengths(i) < mu - sigma / 2
+        signalRegionCategories(i) = 1;
+    end
+end
+
+signalLengths = offsets - onsets;
+
+visualizeResults( wave2, onsets, offsets, nSignalRegions, signalRegionCategories );
