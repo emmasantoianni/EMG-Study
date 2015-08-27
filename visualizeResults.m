@@ -29,7 +29,7 @@ for i = 1: nSignalRegions
         plot(onsets(i): offsets(i), wave(onsets(i): offsets(i)), color);
 end
 if offsets(nSignalRegions) < length(wave)
-    tmpInds = (offsets(nSignalRegions-1) + 1): length(wave);
+    tmpInds = (offsets(nSignalRegions) + 1): length(wave);
     plot(tmpInds, wave(tmpInds), 'b');
 end
 

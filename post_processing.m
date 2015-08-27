@@ -87,8 +87,9 @@ intervalThresh = mean(signalLengths) - 0.5 * std(signalLengths);
 
 ind = 2;
 while ind <= length(onsets)
-    if signalLengths(ind-1) < signalLenThresh && signalLengths(ind) > signalLenThresh && ...
-            onsets(ind) - offsets(ind-1) < intervalThresh
+%     if signalLengths(ind-1) < signalLenThresh && signalLengths(ind) > signalLenThresh && ...
+%             onsets(ind) - offsets(ind-1) < intervalThresh
+    if signalLengths(ind-1) < signalLenThresh && onsets(ind) - offsets(ind-1) < intervalThresh
         offsets(ind-1) = offsets(ind);
         signalLengths(ind-1) = offsets(ind-1) - onsets(ind-1);
         
@@ -103,24 +104,27 @@ end
 % update based on onsets/offsets
 nSignalRegions = ind - 1;
 
+figure
 hist(signalLengths);
-%%
+title('Histogram of signal lengths');
+
+%% categorize signals
 mu = mean(signalLengths);
 sigma = std(signalLengths);
 
-% mean amplitude
-meanAmp = zeros(size(signalLengths));
+% max amplitude
+maxAmp = zeros(size(signalLengths));
 for i = 1: length(signalLengths)
-    meanAmp(i) = mean(abs(wave2(onsets(i): offsets(i))));
+    maxAmp(i) = max(abs(wave2(onsets(i): offsets(i))));
 end
-muMeanAmp = mean(meanAmp);
-threshAmp = muMeanAmp - std(meanAmp);
+muMaxAmp = mean(maxAmp);
+threshAmp = muMaxAmp - std(maxAmp) * 2;
 
 signalRegionCategories = zeros(size(signalLengths));
 for i = 1: length(signalLengths)
-    if meanAmp(i) < threshAmp
+    if maxAmp(i) < threshAmp
         signalRegionCategories(i) = 2;
-    elseif signalLengths(i) < mu - sigma / 2
+    elseif signalLengths(i) < mu - sigma * 2
         signalRegionCategories(i) = 1;
     end
 end

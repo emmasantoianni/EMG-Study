@@ -10,23 +10,25 @@ else
 end
 
 %% Known regions of noise
-noiseIntervals = [8077, 9079; 12685, 16654; 19110, 21555; ...
-    23765, 25641; 27810, 29482; 31475, 34075; 39207, 43350; ...
-    46366, 50400; 53944, 57694; 60473, 63119; 65967, 67801; ...
-    68178, 70163; 72893, 73823; 76333, 78476; 80640, 82557; ...
-    86985, 89814];
 
-figure
-title('Pre-identified noise intervals');
-hold on
-noiseAll = [];
-for i = 1: size(noiseIntervals, 1)
-    noise = wave1(noiseIntervals(i, 1): noiseIntervals(i, 2));
-    time = (noiseIntervals(i, 1): noiseIntervals(i, 2))';
-    plot(time, noise);
-    noiseAll = [noiseAll; noise];
-end
-hold off
+% this applies to the data/GA7-15-98RPEARF.csv dataset.
+% noiseIntervals = [8077, 9079; 12685, 16654; 19110, 21555; ...
+%     23765, 25641; 27810, 29482; 31475, 34075; 39207, 43350; ...
+%     46366, 50400; 53944, 57694; 60473, 63119; 65967, 67801; ...
+%     68178, 70163; 72893, 73823; 76333, 78476; 80640, 82557; ...
+%     86985, 89814];
+% 
+% figure
+% title('Pre-identified noise intervals');
+% hold on
+% noiseAll = [];
+% for i = 1: size(noiseIntervals, 1)
+%     noise = wave1(noiseIntervals(i, 1): noiseIntervals(i, 2));
+%     time = (noiseIntervals(i, 1): noiseIntervals(i, 2))';
+%     plot(time, noise);
+%     noiseAll = [noiseAll; noise];
+% end
+% hold off
 
 % sigma = 100;
 % noise1 = highPass(wave(noiseIntervals(7, 1): noiseIntervals(7, 2)), Fs, sigma);
@@ -95,7 +97,22 @@ for i = 1: length(noiseIntervals)
 end
 figure
 surf(TM);
-scatter(points(1, :), points(2, :), '.');
+%scatter(points(1, :), points(2, :), '.');
+
+% For continuous model (with normal distribution assumption):
+points = zeros(2, length(wave2));
+ind = 0;
+for i = 1: length(noiseIntervals)
+    noise = wave2(noiseIntervals(i, 1): noiseIntervals(i, 2));
+    diffNoise = diff(round(noise));
+    for j = 1: length(diffNoise) - 1
+        curr = diffNoise(j);
+        next = diffNoise(j + 1);
+        ind = ind + 1;
+        points(:, ind) = [curr; next];
+    end
+end
+points = points(:, 1: ind);
 mu = mean(points, 2);
 sigma = cov(points');
 
@@ -140,7 +157,7 @@ for i = 1: length(diffWave) - 1
     % probability of taking that value given in noise region
     if round(curr) < n && round(curr) > 0 && round(next) < n && round(next) > 0
         pVgN = TM(round(curr), round(next)) / (length(diffNoise) - 1);
-    else % need smoothing
+    else % need smoothing (outside of TM)
         pVgN = 0;
     end
     p(i) = pVgN / pVal;

@@ -3,7 +3,7 @@ clear all
 
 %% Load data
 filename = 'data/GA7-15-98RPEARF.csv';
-%filename = 'data/GA8-4-98LHPCF.csv';
+%filename = 'data/GA8-4-98LHPCF.csv'; % large noise
 %filename = 'data/MK3-7-96LAF.csv';
 
 %rawData = csvread(, 1, 0);
@@ -61,6 +61,7 @@ startFreq = round(50 / f(2));
 figure
 plot(f(startFreq: end), 2*abs(fLMS(startFreq: nfft/2+1)));
 title 'EMG signal Fourier transform'
+
 
 
 
