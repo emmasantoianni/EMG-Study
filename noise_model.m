@@ -42,7 +42,7 @@ end
 
 %% Approximate rough noise regions (conservative)
 
-hwSize = 15;
+hwSize = 7;
 approxNoiseIntervals = roughNoise(wave2, inds, hwSize);
 
 figure

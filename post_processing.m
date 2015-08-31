@@ -28,7 +28,7 @@ plot(inds(1: end - 1), lscore);
 subplot(2, 1, 2);
 posterior = lscore - rscore;
 plot(inds(1: end - 1), lscore - rscore);
-csvwrite('data/GA7-15-98RPEARF-posterior.csv', posterior);
+csvwrite(['data/', filename, '-posterior.csv'], posterior);
 
 %% Isolate signal regions
 
@@ -47,16 +47,21 @@ onsets = zeros(length(posterior), 1);
 offsets = zeros(length(posterior), 1);
 inSignal = false;
 for i = 1: length(posterior) - allowedGap
+    if ~inSignal && posterior(i) > 0
+        onsetStart = i;
+    end
     seg = posterior(i: i + allowedGap - 1);
     % transfer into signal region
     if ~inSignal && seg(1) >= postThresh
         inSignal = true;
         nSignalRegions = nSignalRegions + 1;
-        onsets(nSignalRegions) = i;
+        
+        onsetStart = findGap(posterior, i, allowedGap + 1)
+        onsets(nSignalRegions) = onsetStart;
     % transfer out of signal region:
     % When the values are less than 4 in allowed gap, followed by a
     % sequence of zeros
-    elseif inSignal && ~any(seg >= postThresh) && ~any(posterior(i + allowedGap: i + 2*allowedGap))
+    elseif inSignal && ~any(seg >= postThresh) && ~any(posterior(i + allowedGap: i + allowedGap))
         inSignal = false;
         
         % if the length of this detected signal is too insignificant,
@@ -84,6 +89,7 @@ signalLengths = offsets - onsets;
 
 signalLenThresh = 1000;
 intervalThresh = mean(signalLengths) - 0.5 * std(signalLengths);
+intervalThresh = 100;
 
 ind = 2;
 while ind <= length(onsets)
