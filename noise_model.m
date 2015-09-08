@@ -99,7 +99,7 @@ figure
 surf(TM);
 %scatter(points(1, :), points(2, :), '.');
 
-% For continuous model (with normal distribution assumption):
+%% For continuous model (with normal distribution assumption):
 points = zeros(2, length(wave2));
 ind = 0;
 for i = 1: length(noiseIntervals)
@@ -113,8 +113,21 @@ for i = 1: length(noiseIntervals)
     end
 end
 points = points(:, 1: ind);
-mu = mean(points, 2);
-sigma = cov(points');
+muNoise = mean(points, 2);
+sigmaNoise = cov(points');
+
+diffWave = diff(wave2);
+pointsAll = zeros(2, length(diffWave));
+ind = 0;
+for i = 1: length(noiseIntervals)
+    curr = diffWave(i);
+    next = diffWave(i + 1);
+    ind = ind + 1;
+    pointsAll(:, ind) = [curr; next];
+end
+pointsAll = pointsAll(:, 1: ind);
+muAll = mean(pointsAll, 2);
+sigmaAll = cov(pointsAll');
 
 %% evaluate diff sequence
 
@@ -144,7 +157,7 @@ else
 end
 
 disp('Computing probability for entire sequence ...');
-p = zeros(length(diffWave), 1);
+post = zeros(length(diffWave), 1);
 for i = 1: length(diffWave) - 1
     curr = diffWave(i);
     next = diffWave(i+1);
@@ -159,17 +172,24 @@ for i = 1: length(diffWave) - 1
         pVgN = TM(round(curr), round(next)) / (length(diffNoise) - 1);
     else % need smoothing (outside of TM)
         pVgN = 0;
-    end
-    p(i) = pVgN / pVal;
+    end 
+    
+    post(i) = pVgN / pVal;
+    
+    pValCont = mvnpdf([curr; next], muAll, sigmaAll) / (length(diffWave) - 1);
+    pVgNCont = mvnpdf([curr; next], muNoise, sigmaNoise) /  (length(diffNoise) - 1);
+    post(i) = pVgNCont / pValCont;
 end
+
+
 
 figure
 
 subplot(3, 1, 1);
-plot(inds(1: end - 1), p); % last point not calculated
+plot(inds(1: end - 1), post); % last point not calculated
 title('Raw unnormalized probability');
 subplot(3, 1, 2);
-plot(inds(1: end - 1), log(p + eps));
+plot(inds(1: end - 1), log(post + eps));
 ylabel('log scale');
 
 subplot(3, 1, 3);
@@ -180,7 +200,7 @@ ylabel('original signal');
 windowSize = 11;
 f = ones(windowSize, 1);
 f = f / sum(f);
-pw = conv(p, f);
+pw = conv(post, f);
 
 figure
 plot(pw)
