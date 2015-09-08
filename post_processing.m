@@ -10,7 +10,9 @@
 lwSize = 20;
 rwSize = 20;
 wSize = lwSize + rwSize + 1;
-threshold = 1.5;
+%threshold = 1.5;
+% for continuous
+threshold = 4;
 
 lscore = zeros(size(p));
 rscore = zeros(size(p));
@@ -33,11 +35,12 @@ csvwrite(['data/', filename, '-posterior.csv'], posterior);
 %% Isolate signal regions
 
 % posterior threshold
-postThresh = 3;
+postThresh = 5;
 
 % we allow this amount of zero entries within the signal. If the gap is
 % larger than that, we split the signal into two.
-allowedGap = wSize * 2;
+%allowedGap = uint32(wSize );
+allowedGap = 60;
 
 % sign does not matter here
 posterior = abs(posterior);
@@ -56,7 +59,7 @@ for i = 1: length(posterior) - allowedGap
         inSignal = true;
         nSignalRegions = nSignalRegions + 1;
         
-        onsetStart = findGap(posterior, i, allowedGap + 1)
+        onsetStart = findGap(posterior, i, allowedGap + 1, 'before');
         onsets(nSignalRegions) = onsetStart;
     % transfer out of signal region:
     % When the values are less than 4 in allowed gap, followed by a
@@ -70,7 +73,8 @@ for i = 1: length(posterior) - allowedGap
             onsets(nSignalRegions) = 0;
             nSignalRegions = nSignalRegions - 1;
         else
-            offsets(nSignalRegions) = i;
+            offsetEnd = findGap(posterior, i, allowedGap + 1, 'after');
+            offsets(nSignalRegions) = offsetEnd;
         end
     end
 end
@@ -89,7 +93,7 @@ signalLengths = offsets - onsets;
 
 signalLenThresh = 1000;
 intervalThresh = mean(signalLengths) - 0.5 * std(signalLengths);
-intervalThresh = 100;
+intervalThresh = 200;
 
 ind = 2;
 while ind <= length(onsets)

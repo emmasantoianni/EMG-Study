@@ -5,12 +5,12 @@ clear all
 %filename = 'data/GA7-15-98RPEARF.csv';
 %filename = 'data/GA8-4-98LHPCF.csv'; % large noise
 %filename = 'data/MK3-7-96LAF.csv';
-filename = 'trial_701 Tupaia Doughboy 9-27-2001 cricket.csv';
+filename = 'trial_701 Tupaia Doughboy 9-27-2001 cricket';
 
 %rawData = csvread(, 1, 0);
-rawData = csvread([filename, '.csv'], 1, 0);
+rawData = csvread(['data/', filename, '.csv'], 1, 0);
 
-fid = fopen(filename);
+fid = fopen(['data/', filename, '.csv']);
 header = textscan(fid,'%s %s %s %s %s %s %s %s', 1, 'delimiter',',');
 fclose(fid);
 

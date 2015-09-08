@@ -139,12 +139,12 @@ diffWave = diff(wave2) - diffOffset;
 if reRun
     TMall = java.util.HashMap;
     for i = 1: length(diffWave) - 1
-        p = java.awt.Point(diffWave(i), diffWave(i+1));
-        count = TMall.get(p);
+        pt = java.awt.Point(diffWave(i), diffWave(i+1));
+        count = TMall.get(pt);
         if isempty(count)
-            TMall.put(p, 1);
+            TMall.put(pt, 1);
         else
-            TMall.put(p, count + 1);
+            TMall.put(pt, count + 1);
         end
     end
     reRun = false;
@@ -157,7 +157,7 @@ else
 end
 
 disp('Computing probability for entire sequence ...');
-post = zeros(length(diffWave), 1);
+p = zeros(length(diffWave), 1);
 for i = 1: length(diffWave) - 1
     curr = diffWave(i);
     next = diffWave(i+1);
@@ -172,13 +172,13 @@ for i = 1: length(diffWave) - 1
         pVgN = TM(round(curr), round(next)) / (length(diffNoise) - 1);
     else % need smoothing (outside of TM)
         pVgN = 0;
-    end 
+    end
     
-    post(i) = pVgN / pVal;
+    p(i) = pVgN / pVal;
     
     pValCont = mvnpdf([curr; next], muAll, sigmaAll) / (length(diffWave) - 1);
     pVgNCont = mvnpdf([curr; next], muNoise, sigmaNoise) /  (length(diffNoise) - 1);
-    post(i) = pVgNCont / pValCont;
+    p(i) = pVgNCont / pValCont;
 end
 
 
@@ -186,10 +186,10 @@ end
 figure
 
 subplot(3, 1, 1);
-plot(inds(1: end - 1), post); % last point not calculated
+plot(inds(1: end - 1), p); % last point not calculated
 title('Raw unnormalized probability');
 subplot(3, 1, 2);
-plot(inds(1: end - 1), log(post + eps));
+plot(inds(1: end - 1), log(p + eps));
 ylabel('log scale');
 
 subplot(3, 1, 3);
@@ -200,7 +200,7 @@ ylabel('original signal');
 windowSize = 11;
 f = ones(windowSize, 1);
 f = f / sum(f);
-pw = conv(post, f);
+pw = conv(p, f);
 
 figure
 plot(pw)
