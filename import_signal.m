@@ -2,12 +2,13 @@ close all
 clear all
 
 %% Load data
-filename = 'data/GA7-15-98RPEARF.csv';
+%filename = 'data/GA7-15-98RPEARF.csv';
 %filename = 'data/GA8-4-98LHPCF.csv'; % large noise
 %filename = 'data/MK3-7-96LAF.csv';
+filename = 'trial_701 Tupaia Doughboy 9-27-2001 cricket.csv';
 
 %rawData = csvread(, 1, 0);
-rawData = csvread(filename, 1, 0);
+rawData = csvread([filename, '.csv'], 1, 0);
 
 fid = fopen(filename);
 header = textscan(fid,'%s %s %s %s %s %s %s %s', 1, 'delimiter',',');
@@ -39,28 +40,28 @@ plot(wave1);
 title 'after high pass'
 
 %% noise
-noiseSample = wave(1000: 4500);
-figure
-plot(noiseSample);
-title 'EMG noise plot'
-
-[f, fLMS, nfft] = fourier(noiseSample, Fs);
-startFreq = round(50 / f(2));
-figure
-plot(f(startFreq: end), 2*abs(fLMS(startFreq: nfft/2+1)));
-title 'noise Fourier transform'
+% noiseSample = wave(1000: 4500);
+% figure
+% plot(noiseSample);
+% title 'EMG noise plot'
+% 
+% [f, fLMS, nfft] = fourier(noiseSample, Fs);
+% startFreq = round(50 / f(2));
+% figure
+% plot(f(startFreq: end), 2*abs(fLMS(startFreq: nfft/2+1)));
+% title 'noise Fourier transform'
 
 %% signal
-emgSample = wave(5000: 6800);
-figure
-plot(emgSample);
-title 'EMG signal plot'
-
-[f, fLMS, nfft] = fourier(emgSample, Fs);
-startFreq = round(50 / f(2));
-figure
-plot(f(startFreq: end), 2*abs(fLMS(startFreq: nfft/2+1)));
-title 'EMG signal Fourier transform'
+% emgSample = wave(5000: 6800);
+% figure
+% plot(emgSample);
+% title 'EMG signal plot'
+% 
+% [f, fLMS, nfft] = fourier(emgSample, Fs);
+% startFreq = round(50 / f(2));
+% figure
+% plot(f(startFreq: end), 2*abs(fLMS(startFreq: nfft/2+1)));
+% title 'EMG signal Fourier transform'
 
 
 
