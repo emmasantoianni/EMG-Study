@@ -142,3 +142,6 @@ end
 signalLengths = offsets - onsets;
 
 visualizeResults( wave2, onsets, offsets, nSignalRegions, signalRegionCategories );
+
+%% Obtain noise region for the estimation (can be used for feedback)
+

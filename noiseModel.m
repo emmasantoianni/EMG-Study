@@ -1,4 +1,4 @@
-function [ p ] = noiseModel( wave1, extremaOnly )
+function [ p ] = noiseModel( wave1, extremaOnly, noiseRegion )
 %NOISEMODEL Noise model using bigrams
 %   Detailed explanation goes here
 
@@ -14,6 +14,29 @@ if extremaOnly
 else
     wave2 = wave1;
     inds = 1: length(wave2);
+end
+
+%% Approximate rough noise regions (conservative)
+
+if exist('noiseRegion', 'var')
+    noiseAll = noiseRegion;
+else
+    disp('Estimating noise region based on Thexton''s method');
+    hwSize = 7;
+    approxNoiseIntervals = roughNoise(wave2, inds, hwSize);
+
+    figure
+    title(sprintf('Approximate noise intervals with window size %d', hwSize*2 + 1));
+    hold on
+    noiseAll = [];
+    for i = 1: size(approxNoiseIntervals, 1)
+        noise = wave1(approxNoiseIntervals(i, 1): approxNoiseIntervals(i, 2));
+        time = (approxNoiseIntervals(i, 1): approxNoiseIntervals(i, 2))';
+        plot(time, noise);
+        noiseAll = [noiseAll; noise];
+    end
+    hold off
+    noiseIntervals = approxNoiseIntervals;
 end
 
 
@@ -44,6 +67,36 @@ surf(TM);
 scatter(points(1, :), points(2, :), '.');
 mu = mean(points, 2);
 sigma = cov(points');
+
+%% For continuous model (with normal distribution assumption):
+points = zeros(2, length(wave2));
+ind = 0;
+for i = 1: length(noiseIntervals)
+    noise = wave2(noiseIntervals(i, 1): noiseIntervals(i, 2));
+    diffNoise = diff(round(noise));
+    for j = 1: length(diffNoise) - 1
+        curr = diffNoise(j);
+        next = diffNoise(j + 1);
+        ind = ind + 1;
+        points(:, ind) = [curr; next];
+    end
+end
+points = points(:, 1: ind);
+muNoise = mean(points, 2);
+sigmaNoise = cov(points');
+
+diffWave = diff(wave2);
+pointsAll = zeros(2, length(diffWave));
+ind = 0;
+for i = 1: length(noiseIntervals)
+    curr = diffWave(i);
+    next = diffWave(i + 1);
+    ind = ind + 1;
+    pointsAll(:, ind) = [curr; next];
+end
+pointsAll = pointsAll(:, 1: ind);
+muAll = mean(pointsAll, 2);
+sigmaAll = cov(pointsAll');
 
 %% evaluate diff sequence
 
@@ -86,10 +139,15 @@ for i = 1: length(diffWave) - 1
     % probability of taking that value given in noise region
     if round(curr) < n && round(curr) > 0 && round(next) < n && round(next) > 0
         pVgN = TM(round(curr), round(next)) / (length(diffNoise) - 1);
-    else % need smoothing
+    else % need smoothing (outside of TM)
         pVgN = 0;
     end
+    
     p(i) = pVgN / pVal;
+    
+    pValCont = mvnpdf([curr; next], muAll, sigmaAll) / (length(diffWave) - 1);
+    pVgNCont = mvnpdf([curr; next], muNoise, sigmaNoise) /  (length(diffNoise) - 1);
+    p(i) = pVgNCont / pValCont;
 end
 
 figure
