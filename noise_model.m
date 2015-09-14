@@ -135,6 +135,7 @@ if ~exist('reRun', 'var')
     reRun = true;
 end
 
+% only for discrete case
 diffWave = diff(wave2) - diffOffset;
 if reRun
     TMall = java.util.HashMap;
@@ -178,6 +179,7 @@ for i = 1: length(diffWave) - 1
     
     pValCont = mvnpdf([curr; next], muAll, sigmaAll) / (length(diffWave) - 1);
     pVgNCont = mvnpdf([curr; next], muNoise, sigmaNoise) /  (length(diffNoise) - 1);
+    % use continuous model
     p(i) = pVgNCont / pValCont;
 end
 

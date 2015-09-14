@@ -2,7 +2,7 @@ close all
 clear all
 
 %% Load data
-%filename = 'data/GA7-15-98RPEARF.csv';
+%filename = 'GA7-15-98RPEARF';
 %filename = 'data/GA8-4-98LHPCF.csv'; % large noise
 %filename = 'data/MK3-7-96LAF.csv';
 filename = 'trial_701 Tupaia Doughboy 9-27-2001 cricket';
