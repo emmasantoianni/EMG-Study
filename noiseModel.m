@@ -1,4 +1,4 @@
-function [ p ] = noiseModel( wave1, extremaOnly, noiseRegion )
+function [ p ] = noiseModel( wave1, extremaOnly, useContinuous, noiseRegion, noiseIntervals )
 %NOISEMODEL Noise model using bigrams
 %   Detailed explanation goes here
 
@@ -6,6 +6,10 @@ function [ p ] = noiseModel( wave1, extremaOnly, noiseRegion )
 %range = [6000, 15000];
 %noise = wave1(range(1): range(2));
 %noise = wave1;
+
+if ~exist('useContinuous', 'var')
+    useContinuous = true;
+end
 
 % optional: simplify by removing consecutive 
 if extremaOnly
@@ -73,7 +77,7 @@ points = zeros(2, length(wave2));
 ind = 0;
 for i = 1: length(noiseIntervals)
     noise = wave2(noiseIntervals(i, 1): noiseIntervals(i, 2));
-    diffNoise = diff(round(noise));
+    diffNoise = diff(noise);
     for j = 1: length(diffNoise) - 1
         curr = diffNoise(j);
         next = diffNoise(j + 1);
@@ -126,28 +130,34 @@ else
 end
 
 disp('Computing probability for entire sequence ...');
+if useContinuous
+    diffWave = diff(wave2);
+else
+    diffWave = diff(wave2) - diffOffset;
+end
 p = zeros(length(diffWave), 1);
 for i = 1: length(diffWave) - 1
     curr = diffWave(i);
     next = diffWave(i+1);
-    pVal = TMall.get(java.awt.Point(curr, next));
-    if isempty(pVal)
-        pVal = 0;
+    if ~useContinuous
+        pVal = TMall.get(java.awt.Point(curr, next));
+        if isempty(pVal)
+            pVal = 0;
+        else
+            pVal = pVal / (length(diffWave) - 1);
+        end
+        % probability of taking that value given in noise region
+        if round(curr) < n && round(curr) > 0 && round(next) < n && round(next) > 0
+            pVgN = TM(round(curr), round(next)) / (length(diffNoise) - 1);
+        else % need smoothing (outside of TM)
+            pVgN = 0;
+        end
+        p(i) = pVgN / pVal;
     else
-        pVal = pVal / (length(diffWave) - 1);
+        pValCont = mvnpdf([curr; next], muAll, sigmaAll) / (length(diffWave) - 1);
+        pVgNCont = mvnpdf([curr; next], muNoise, sigmaNoise) /  (length(diffNoise) - 1);
+        p(i) = pVgNCont / pValCont;
     end
-    % probability of taking that value given in noise region
-    if round(curr) < n && round(curr) > 0 && round(next) < n && round(next) > 0
-        pVgN = TM(round(curr), round(next)) / (length(diffNoise) - 1);
-    else % need smoothing (outside of TM)
-        pVgN = 0;
-    end
-    
-    p(i) = pVgN / pVal;
-    
-    pValCont = mvnpdf([curr; next], muAll, sigmaAll) / (length(diffWave) - 1);
-    pVgNCont = mvnpdf([curr; next], muNoise, sigmaNoise) /  (length(diffNoise) - 1);
-    p(i) = pVgNCont / pValCont;
 end
 
 figure

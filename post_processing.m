@@ -10,9 +10,9 @@
 lwSize = 20;
 rwSize = 20;
 wSize = lwSize + rwSize + 1;
-%threshold = 1.5;
+threshold = 1.5;
 % for continuous
-threshold = 4;
+%threshold = 4;
 
 lscore = zeros(size(p));
 rscore = zeros(size(p));
