@@ -6,7 +6,7 @@ wave2 = wave1;
 inds = 1: length(wave2);
 post_processing
 
-%%
+%% Feedback
 noiseAll = [];
 % the 100 points after offset is considered ambiguous and not included in
 % noise

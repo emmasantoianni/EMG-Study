@@ -170,7 +170,8 @@ plot(inds(1: end - 1), log(p + eps));
 
 figure
 plot(wave1)
-
+%figure
+%plot(inds(1: end - 1), log(p + eps));
 %% Windowing
 windowSize = 11;
 f = ones(windowSize, 1);
