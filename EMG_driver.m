@@ -2,8 +2,8 @@
 import_signal
 p = noiseModel(wave1, false,  true);
 
-wave2 = wave1;
-inds = 1: length(wave2);
+wave2 = wave;
+inds = 1: length(wave);
 post_processing
 
 %% Feedback
@@ -21,4 +21,4 @@ end
 % noise intervals
 noiseIntervals = [offsets(1: length(offsets) - 1) + ambiguousLen, onsets(2: length(onsets)) - ambiguousLen];
 
-p = noiseModel(wave1, false, false, noiseAll, noiseIntervals);
+p = noiseModel(wave1, false, true, noiseAll, noiseIntervals);

@@ -50,6 +50,7 @@ diffNoise = diff(round(noiseAll));
 diffOffset = min(diffNoise) - 1;
 n = round(max(diffNoise - diffOffset));
 TM = zeros(n, n);
+
 for i = 1: length(noiseIntervals)
     noise = wave1(noiseIntervals(i, 1): noiseIntervals(i, 2));
     
@@ -58,19 +59,15 @@ for i = 1: length(noiseIntervals)
     % transition
 
     % the coordinates of each point is the consecutive diffNoise values
-    points = zeros(2, length(diffNoise) - 1);
     for j = 1: length(diffNoise) - 1
         curr = diffNoise(j);
         next = diffNoise(j + 1);
-        points(:, j) = [curr; next];
         TM(round(curr), round(next)) = TM(curr, next) + 1;
     end
 end
+%points = points(:, 1: pointsIdx);
 figure
 surf(TM);
-scatter(points(1, :), points(2, :), '.');
-mu = mean(points, 2);
-sigma = cov(points');
 
 %% For continuous model (with normal distribution assumption):
 points = zeros(2, length(wave2));
