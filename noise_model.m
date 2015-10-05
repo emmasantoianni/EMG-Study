@@ -96,7 +96,7 @@ for i = 1: length(noiseIntervals)
     end
 end
 figure
-surf(TM);
+surf(-20:20, -20:20, TM, 'EdgeColor','none','LineStyle','none','FaceLighting','phong');
 %scatter(points(1, :), points(2, :), '.');
 
 %% For continuous model (with normal distribution assumption):
@@ -136,11 +136,19 @@ if ~exist('reRun', 'var')
 end
 
 % only for discrete case
-diffWave = diff(wave2) - diffOffset;
+diffWave = diff(wave2);
+diffOffsetAll = min(diffWave) - 1;
+diffWaveAll = diffWave - diffOffsetAll;
+
+% visualization only
+nAll = round(max(diffWaveAll));
+TMallMat = zeros(nAll, nAll);
+
 if reRun
     TMall = java.util.HashMap;
     for i = 1: length(diffWave) - 1
         pt = java.awt.Point(diffWave(i), diffWave(i+1));
+        TMallMat(round(diffWaveAll(i)), round(diffWaveAll(i+1))) = TMallMat(round(diffWaveAll(i)), round(diffWaveAll(i+1))) + 1;
         count = TMall.get(pt);
         if isempty(count)
             TMall.put(pt, 1);
@@ -156,6 +164,10 @@ else
         load TMall;
     end
 end
+
+surf(-200:139, -200:139, TMallMat, 'EdgeColor','none','LineStyle','none','FaceLighting','phong');
+
+%%
 
 disp('Computing probability for entire sequence ...');
 p = zeros(length(diffWave), 1);
