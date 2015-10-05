@@ -41,7 +41,7 @@ hold off
 [~, ind] = min(diffNum);
 tolerance = 0.2;
 threshold = ind * step + 1 - step/2 + tolerance;
-threshold = 7;
+threshold = 5;
 fprintf('Threshold set at: %d\n', threshold);
 
 %% use threshold to find noise regions

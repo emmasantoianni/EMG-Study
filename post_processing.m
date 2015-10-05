@@ -40,7 +40,7 @@ postThresh = 5;
 % we allow this amount of zero entries within the signal. If the gap is
 % larger than that, we split the signal into two.
 %allowedGap = uint32(wSize );
-allowedGap = 60;
+allowedGap = 120;
 
 % sign does not matter here
 posterior = abs(posterior);
@@ -85,7 +85,7 @@ onsets = onsets(1: nSignalRegions);
 offsets = offsets(1: nSignalRegions);
 
 %% visualize
-visualizeResults( wave2, onsets, offsets, nSignalRegions );
+%visualizeResults( wave2, onsets, offsets, nSignalRegions );
 
 
 %% Merge chewing cycles / remove outliers
@@ -132,9 +132,7 @@ threshAmp = muMaxAmp - std(maxAmp) * 2;
 
 signalRegionCategories = zeros(size(signalLengths));
 for i = 1: length(signalLengths)
-    if maxAmp(i) < threshAmp
-        signalRegionCategories(i) = 2;
-    elseif signalLengths(i) < mu - sigma * 2
+    if signalLengths(i) < mu - sigma * 2
         signalRegionCategories(i) = 1;
     end
 end
@@ -143,5 +141,5 @@ signalLengths = offsets - onsets;
 
 visualizeResults( wave2, onsets, offsets, nSignalRegions, signalRegionCategories );
 
-%% Obtain noise region for the estimation (can be used for feedback)
-
+%% save onsets/offsets
+csvwrite(['data/', filename, '_result.csv'], [onsets, offsets]);
