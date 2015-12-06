@@ -16,10 +16,18 @@ if ~forward && ~strcmp(direction, 'before')
     error('unidentified direction');
 end
 
+function res = isG(x)
+    if abs(x) <= 1
+        res = 1;
+    else
+        res = 0;
+    end
+end
+
 if ~forward
     ind = startInd;
     while ind > 0 
-        if arr(ind) ~= 0
+        if ~(isG(arr(ind)))
             ind = ind - 1;
             continue;
         else
@@ -28,7 +36,7 @@ if ~forward
                 if ind <= i % at the beggining of array: count as gap
                     break;
                 end
-                if arr(ind - i) ~= 0
+                if ~(isG(arr(ind - i)))
                     isGap = false;
                     break;
                 end
@@ -44,7 +52,7 @@ if ~forward
 else
     ind = startInd;
     while ind < length(arr)
-        if arr(ind) ~= 0
+        if ~(isG(arr(ind)))
             ind = ind + 1;
             continue;
         else
@@ -53,7 +61,7 @@ else
                 if ind + i > length(arr)  % at the beggining of array: count as gap
                     break;
                 end
-                if arr(ind + i) ~= 0
+                if ~(isG(arr(ind + i)))
                     isGap = false;
                     break;
                 end
@@ -68,3 +76,4 @@ else
     end
 end
 
+end

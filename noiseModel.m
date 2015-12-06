@@ -13,12 +13,13 @@ end
 
 % optional: simplify by removing consecutive 
 if extremaOnly
-    noiseAll = extractExtrema(noiseAll);
     [wave2, inds] = extractExtrema(wave1);
 else
     wave2 = wave1;
     inds = 1: length(wave2);
 end
+
+ampDist = fitdist(abs(wave1), 'Exponential');
 
 %% Approximate rough noise regions (conservative)
 
@@ -52,7 +53,10 @@ n = round(max(diffNoise - diffOffset));
 TM = zeros(n, n);
 
 for i = 1: length(noiseIntervals)
-    noise = wave1(noiseIntervals(i, 1): noiseIntervals(i, 2));
+    noise = wave2(noiseIntervals(i, 1): noiseIntervals(i, 2));
+    if extremaOnly
+        [noise, noiseInds] = extractExtrema(noise);
+    end
     
     diffNoise = diff(round(noise)) - diffOffset;
     %plot(diffNoise);
@@ -133,9 +137,14 @@ else
     diffWave = diff(wave2) - diffOffset;
 end
 p = zeros(length(diffWave), 1);
+
+% currs = zeros(length(diffWave) - 1, 1);
+% nexts = zeros(length(diffWave) - 1, 1);
+% w = wave2(2: end - 1);
 for i = 1: length(diffWave) - 1
     curr = diffWave(i);
     next = diffWave(i+1);
+%     currs(i) = curr; nexts(i) = next;
     if ~useContinuous
         pVal = TMall.get(java.awt.Point(curr, next));
         if isempty(pVal)
@@ -151,11 +160,17 @@ for i = 1: length(diffWave) - 1
         end
         p(i) = pVgN / pVal;
     else
-        pValCont = mvnpdf([curr; next], muAll, sigmaAll) / (length(diffWave) - 1);
-        pVgNCont = mvnpdf([curr; next], muNoise, sigmaNoise) /  (length(diffNoise) - 1);
-        p(i) = pVgNCont / pValCont;
+        pValCont = mvnpdf([curr; next], muAll, sigmaAll);% / (length(diffWave) - 1);
+        pVgNCont = mvnpdf([curr; next], muNoise, sigmaNoise);% /  (length(diffNoise) - 1);
+        p(i) = pVgNCont / pValCont * pdf(ampDist, abs(wave1(i))) * pdf(ampDist, abs(wave1(i+1)));
     end
 end
+% figure
+% scatter3(currs, nexts, w, '.');
+% xlabel('previous variation');
+% ylabel('next variation');
+% zlabel('amplitude');
+% title('distribution of points in amplitude-variation space')
 
 figure
 
