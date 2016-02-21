@@ -1,18 +1,16 @@
-% post-process the posterior (unnormalized) p, together with high passed
+% Post-process the posterior (unnormalized) p, together with high passed
 % signal wave1.
 %
-% Run driver_signal, noise_model first
+% Pre-requisite: EMG_driver.m
 %
-% author: Rex
+% Author: Rex
 %
 
 % left and right window size
 lwSize = 20;
 rwSize = 20;
 wSize = lwSize + rwSize + 1;
-threshold = 1.5;
-% for continuous
-%threshold = 4;
+threshold = 5;
 
 lscore = zeros(size(p));
 rscore = zeros(size(p));
@@ -91,8 +89,8 @@ offsets = offsets(1: nSignalRegions);
 %% Merge chewing cycles / remove outliers
 signalLengths = offsets - onsets;
 
-signalLenThresh = 1000;
-intervalThresh = mean(signalLengths) - 0.5 * std(signalLengths);
+%signalLenThresh = 1000;
+signalLenThresh = mean(signalLengths) - 0.5 * std(signalLengths);
 intervalThresh = 200;
 
 ind = 2;

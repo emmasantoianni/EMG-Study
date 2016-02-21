@@ -1,5 +1,9 @@
-%%
-import_signal
+%% Script to classify noise from EMG signals
+%
+% Author: Rex Ying
+%
+
+wave1 = importSignal('MK3-7-96LAF');
 p = noiseModel(wave1, false,  true);
 
 wave2 = wave1;
@@ -8,8 +12,7 @@ post_processing
 
 %% Feedback
 noiseAll = [];
-% the 100 points after offset is considered ambiguous and not included in
-% noise
+% the 100 points after offset is considered ambiguous and not included in noise
 ambiguousLen = 100;
 for i = 1: length(offsets) - 1
     if (onsets(i+1) - offsets(i) < 2 * ambiguousLen)
@@ -22,3 +25,4 @@ end
 noiseIntervals = [offsets(1: length(offsets) - 1) + ambiguousLen, onsets(2: length(onsets)) - ambiguousLen];
 
 p = noiseModel(wave1, false, false, noiseAll, noiseIntervals);
+post_processing
