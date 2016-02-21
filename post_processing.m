@@ -6,11 +6,20 @@
 % Author: Rex
 %
 
+% windowSize = 11;
+% f = ones(windowSize, 1);
+% f = f / sum(f);
+% pw = conv(p, f);
+% 
+% figure
+% plot(pw)
+
 % left and right window size
-lwSize = 20;
-rwSize = 20;
+lwSize = 40;
+rwSize = 40;
 wSize = lwSize + rwSize + 1;
-threshold = 5;
+
+threshold = -10;
 
 lscore = zeros(size(p));
 rscore = zeros(size(p));
@@ -18,8 +27,8 @@ rscore = zeros(size(p));
 for i = lwSize + 1: length(p) - rwSize
     l = p(i - lwSize: i);
     r = p(i: i + rwSize);
-    lscore(i) = sum(l <= threshold);
-    rscore(i) = sum(r <= threshold);
+    lscore(i) = sum(log(l) <= threshold);
+    rscore(i) = sum(log(r) <= threshold);
 end
 
 figure
@@ -27,7 +36,10 @@ subplot(2, 1, 1);
 plot(inds(1: end - 1), lscore);
 subplot(2, 1, 2);
 posterior = lscore - rscore;
-plot(inds(1: end - 1), lscore - rscore);
+% sign does not matter here
+posterior = abs(posterior);
+%posterior(posterior == 1) = 0;
+plot(inds(1: end - 1), posterior);
 csvwrite(['data/', filename, '-posterior.csv'], posterior);
 
 %% Isolate signal regions
@@ -38,10 +50,8 @@ postThresh = 5;
 % we allow this amount of zero entries within the signal. If the gap is
 % larger than that, we split the signal into two.
 %allowedGap = uint32(wSize );
-allowedGap = 120;
+allowedGap = 60;
 
-% sign does not matter here
-posterior = abs(posterior);
 
 nSignalRegions = 0;
 onsets = zeros(length(posterior), 1);
@@ -81,6 +91,54 @@ if inSignal
 end
 onsets = onsets(1: nSignalRegions);
 offsets = offsets(1: nSignalRegions);
+
+%% Alternative (exp)
+% posterior = log(p);
+% allowedGap = 120;
+% threshold = 1.5;
+% isSignal = posterior <= 0;
+% 
+% idx = 2;
+% nSignalRegions = 0;
+% onsets = zeros(length(posterior), 1);
+% offsets = zeros(length(posterior), 1);
+% inSig = false;
+% isMajor = false;
+% while idx <= length(isSignal)
+%     if isSignal(idx - 1) == 0 && isSignal(idx) == 1
+%         nSignalRegions = nSignalRegions + 1;
+%         inSig = true;
+%         isMajor = false;
+%         onsets(nSignalRegions) = idx;
+%     end
+%     if isSignal(idx - 1) == 1 && isSignal(idx) == 0 && nSignalRegions > 0 
+%         if (isMajor)
+%             % attempt to fill in gaps
+%             filled = false;
+%             for j = idx + allowedGap : -1: 1
+%                 if (isSignal(j))
+%                     isSignal(idx: j) = 1;
+%                     filled = true;
+%                     break;
+%                 end
+%             end
+%             if ~filled
+%                 offsets(nSignalRegions) = idx;
+%             end
+%         else
+%             onsets(nSignalRegions) = [];
+%             nSignalRegions = nSignalRegions - 1;
+%         end
+%         isMajor = false;
+%         isSig = false;
+%     end
+%     if (posterior(idx) < -5)
+%         isMajor = true;
+%     end
+%     idx = idx + 1;
+% end
+% onsets = onsets(1: nSignalRegions);
+% offsets = offsets(1: nSignalRegions);
 
 %% visualize
 %visualizeResults( wave2, onsets, offsets, nSignalRegions );

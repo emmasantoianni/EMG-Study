@@ -1,0 +1,185 @@
+[1mdiff --git a/EMG_driver.m b/EMG_driver.m[m
+[1mindex f0a7108..69ab8d6 100644[m
+[1m--- a/EMG_driver.m[m
+[1m+++ b/EMG_driver.m[m
+[36m@@ -2,8 +2,8 @@[m
+ import_signal[m
+ p = noiseModel(wave1, false,  true);[m
+ [m
+[31m-wave2 = wave1;[m
+[31m-inds = 1: length(wave2);[m
+[32m+[m[32mwave2 = wave;[m[41m[m
+[32m+[m[32minds = 1: length(wave);[m[41m[m
+ post_processing[m
+ [m
+ %% Feedback[m
+[36m@@ -21,4 +21,4 @@[m [mend[m
+ % noise intervals[m
+ noiseIntervals = [offsets(1: length(offsets) - 1) + ambiguousLen, onsets(2: length(onsets)) - ambiguousLen];[m
+ [m
+[31m-p = noiseModel(wave1, false, false, noiseAll, noiseIntervals);[m
+[32m+[m[32mp = noiseModel(wave1, false, true, noiseAll, noiseIntervals);[m[41m[m
+[1mdiff --git a/data/trial_701 Tupaia Doughboy 9-27-2001 cricket_result.csv b/data/trial_701 Tupaia Doughboy 9-27-2001 cricket_result.csv[m
+[1mindex 97c13c2..4fc9560 100644[m
+[1m--- a/data/trial_701 Tupaia Doughboy 9-27-2001 cricket_result.csv[m	
+[1m+++ b/data/trial_701 Tupaia Doughboy 9-27-2001 cricket_result.csv[m	
+[36m@@ -1,31 +1,32 @@[m
+[31m-1010,1235[m
+[31m-4194,4782[m
+[31m-7145,7662[m
+[31m-9936,10572[m
+[31m-12780,13285[m
+[31m-15986,16720[m
+[31m-19592,20121[m
+[31m-22435,22947[m
+[31m-25105,25768[m
+[31m-27241,28202[m
+[31m-29831,30354[m
+[31m-33174,33502[m
+[31m-36071,36486[m
+[31m-38980,39377[m
+[31m-41439,41979[m
+[31m-44266,44790[m
+[31m-46891,47385[m
+[32m+[m[32m925,1235[m
+[32m+[m[32m3956,4783[m
+[32m+[m[32m7146,7807[m
+[32m+[m[32m9823,10571[m
+[32m+[m[32m12781,13280[m
+[32m+[m[32m15848,16988[m
+[32m+[m[32m19563,20119[m
+[32m+[m[32m22014,23053[m
+[32m+[m[32m22014,23053[m
+[32m+[m[32m25105,25889[m
+[32m+[m[32m27179,28203[m
+[32m+[m[32m29827,30319[m
+[32m+[m[32m33088,33502[m
+[32m+[m[32m36065,36486[m
+[32m+[m[32m38986,39378[m
+[32m+[m[32m41409,41979[m
+[32m+[m[32m44267,44791[m
+[32m+[m[32m46892,47385[m
+ 48827,49541[m
+[31m-52544,52946[m
+[31m-55361,55908[m
+[31m-58106,58689[m
+[31m-60424,60812[m
+[31m-63183,63585[m
+[31m-65670,66076[m
+[31m-68252,68622[m
+[31m-70228,70825[m
+[31m-71572,71734[m
+[31m-76029,76465[m
+[31m-78467,78806[m
+[31m-81052,81202[m
+[31m-85963,86111[m
+[32m+[m[32m52610,52946[m
+[32m+[m[32m55367,55925[m
+[32m+[m[32m57973,58981[m
+[32m+[m[32m57973,58981[m
+[32m+[m[32m60361,60812[m
+[32m+[m[32m62898,64027[m
+[32m+[m[32m65551,66076[m
+[32m+[m[32m68120,68908[m
+[32m+[m[32m70259,70824[m
+[32m+[m[32m71583,71983[m
+[32m+[m[32m75567,76463[m
+[32m+[m[32m78268,78826[m
+[32m+[m[32m85833,86111[m
+[1mdiff --git a/import_signal.m b/import_signal.m[m
+[1mindex 7bd317b..3be8696 100644[m
+[1m--- a/import_signal.m[m
+[1m+++ b/import_signal.m[m
+[36m@@ -4,8 +4,8 @@[m [mclear all[m
+ %% Load data[m
+ %filename = 'GA7-15-98RPEARF';[m
+ %filename = 'data/GA8-4-98LHPCF.csv'; % large noise[m
+[31m-filename = 'MK3-7-96LAF';[m
+[31m-%filename = 'trial_701 Tupaia Doughboy 9-27-2001 cricket';[m
+[32m+[m[32m%filename = 'MK3-7-96LAF';[m[41m[m
+[32m+[m[32mfilename = 'trial_701 Tupaia Doughboy 9-27-2001 cricket';[m[41m[m
+ [m
+ %rawData = csvread(, 1, 0);[m
+ rawData = csvread(['data/', filename, '.csv'], 1, 0);[m
+[1mdiff --git a/noiseModel.m b/noiseModel.m[m
+[1mindex 2537ca3..c3e9d38 100644[m
+[1m--- a/noiseModel.m[m
+[1m+++ b/noiseModel.m[m
+[36m@@ -50,6 +50,7 @@[m [mdiffNoise = diff(round(noiseAll));[m
+ diffOffset = min(diffNoise) - 1;[m
+ n = round(max(diffNoise - diffOffset));[m
+ TM = zeros(n, n);[m
+[32m+[m[41m[m
+ for i = 1: length(noiseIntervals)[m
+     noise = wave1(noiseIntervals(i, 1): noiseIntervals(i, 2));[m
+     [m
+[36m@@ -58,19 +59,15 @@[m [mfor i = 1: length(noiseIntervals)[m
+     % transition[m
+ [m
+     % the coordinates of each point is the consecutive diffNoise values[m
+[31m-    points = zeros(2, length(diffNoise) - 1);[m
+     for j = 1: length(diffNoise) - 1[m
+         curr = diffNoise(j);[m
+         next = diffNoise(j + 1);[m
+[31m-        points(:, j) = [curr; next];[m
+         TM(round(curr), round(next)) = TM(curr, next) + 1;[m
+     end[m
+ end[m
+[32m+[m[32m%points = points(:, 1: pointsIdx);[m[41m[m
+ figure[m
+ surf(TM);[m
+[31m-scatter(points(1, :), points(2, :), '.');[m
+[31m-mu = mean(points, 2);[m
+[31m-sigma = cov(points');[m
+ [m
+ %% For continuous model (with normal distribution assumption):[m
+ points = zeros(2, length(wave2));[m
+[1mdiff --git a/roughNoise.m b/roughNoise.m[m
+[1mindex 03ffec1..0d35c34 100644[m
+[1m--- a/roughNoise.m[m
+[1m+++ b/roughNoise.m[m
+[36m@@ -41,7 +41,7 @@[m [mhold off[m
+ [~, ind] = min(diffNum);[m
+ tolerance = 0.2;[m
+ threshold = ind * step + 1 - step/2 + tolerance;[m
+[31m-threshold = 5;[m
+[32m+[m[32mthreshold = 7;[m[41m[m
+ fprintf('Threshold set at: %d\n', threshold);[m
+ [m
+ %% use threshold to find noise regions[m
+[1mdiff --git a/thextonizer.m b/thextonizer.m[m
+[1mindex 56c5103..f918a73 100644[m
+[1m--- a/thextonizer.m[m
+[1m+++ b/thextonizer.m[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-function [ threshold ] = thextonizer( signal )[m
+[32m+[m[32mfunction [ threshold, isSignal ] = thextonizer( signal )[m[41m[m
+ %THEXTONIZER Implement a thextonizer[m
+ %  [m
+ %   Given an input EMG signal, find a threshold that best distinguishes noise[m
+[36m@@ -6,10 +6,14 @@[m [mfunction [ threshold ] = thextonizer( signal )[m
+ %[m
+ [m
+ % for integration[m
+[31m-hwSize = 7;[m
+[32m+[m[32mhwSize = 49;[m[41m[m
+ signalInt = integrateEMG(signal, hwSize);[m
+ [m
+[31m-thresholds = 0.1: 0.2: 30;[m
+[32m+[m[32mfigure[m[41m[m
+[32m+[m[32mtitle('integrated signal');[m[41m[m
+[32m+[m[32mplot(signalInt);[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mthresholds = 0.1: 0.5: 50;[m[41m[m
+ [m
+ nCrossings = zeros(size(thresholds));[m
+ nCrossingsRand = zeros(size(thresholds));[m
+[36m@@ -28,7 +32,7 @@[m [mhold on[m
+ plot(nCrossings, 'b');[m
+ [m
+ figure[m
+[31m-plot(nCrossingsDiffs);[m
+[32m+[m[32mplot(thresholds, nCrossingsDiffs);[m[41m[m
+ [m
+ [~, thresholdIdx] = max(nCrossingsDiffs);[m
+ threshold = thresholds(thresholdIdx);[m

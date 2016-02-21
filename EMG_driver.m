@@ -2,12 +2,12 @@
 %
 % Author: Rex Ying
 %
-
-wave1 = importSignal('MK3-7-96LAF');
+filename = 'MK3-7-96LAF';
+wave = importSignal('MK3-7-96LAF');
 p = noiseModel(wave1, false,  true);
 
-wave2 = wave1;
-inds = 1: length(wave2);
+wave2 = wave;
+inds = 1: length(wave);
 post_processing
 
 %% Feedback
