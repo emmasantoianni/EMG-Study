@@ -191,7 +191,7 @@ threshAmp = muMaxAmp - std(maxAmp) * 2;
 signalRegionCategories = zeros(size(signalLengths));
 for i = 1: length(signalLengths)
     if signalLengths(i) < mu - sigma * 2
-        signalRegionCategories(i) = 1;
+        signalRegionCategories(i) = 0;
     end
 end
 

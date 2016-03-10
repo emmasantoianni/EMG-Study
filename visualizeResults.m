@@ -2,8 +2,11 @@ function [ ] = visualizeResults( wave, onsets, offsets, nSignalRegions, categori
 %VISUALIZERESULTS Summary of this function goes here
 %   Detailed explanation goes here
 
+noiseColor = [0.8 0.8 0.8];
+signalColor = [0.1 0.1 0.1];
+
 figure
-subplot(2, 1, 1);
+%subplot(2, 1, 2);
 hold on
 
 if ~exist('categories', 'var')
@@ -13,24 +16,24 @@ end
 handles = cell(1, 4);
 for i = 1: nSignalRegions
     if i == 1
-        handles{4} = plot(1: onsets(i) - 1, wave(1: onsets(i) - 1), 'b');
+        handles{4} = plot(1: onsets(i) - 1, wave(1: onsets(i) - 1), 'Color', noiseColor);
     else
-        plot(offsets(i-1) + 1: onsets(i) - 1, wave(offsets(i-1) + 1: onsets(i) - 1), 'b');
+        plot(offsets(i-1) + 1: onsets(i) - 1, wave(offsets(i-1) + 1: onsets(i) - 1), 'Color', noiseColor);
     end
     
     if categories(i) == 0
-        color = 'r';
+        color = signalColor;
     elseif categories(i) == 1
-        color = 'm';
+        color = signalColor;
     else
-        color = 'k';
+        color = signalColor;
     end
     handles{categories(i) + 1} = ...
-        plot(onsets(i): offsets(i), wave(onsets(i): offsets(i)), color);
+        plot(onsets(i): offsets(i), wave(onsets(i): offsets(i)), 'Color', color);
 end
 if offsets(nSignalRegions) < length(wave)
     tmpInds = (offsets(nSignalRegions) + 1): length(wave);
-    plot(tmpInds, wave(tmpInds), 'b');
+    plot(tmpInds, wave(tmpInds), 'Color', noiseColor);
 end
 
 legendStr = {'signal', 'insignificant signal', 'boundary case', 'noise'};
@@ -54,8 +57,9 @@ legend(legendHandles, legendStr);
 hold off
 title('singals classified');
 
-subplot(2, 1, 2);
-plot(wave);
+figure
+%subplot(2, 1, 1);
+plot(wave, 'Color', signalColor);
 
 end
 

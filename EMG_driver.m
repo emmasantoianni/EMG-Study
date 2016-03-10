@@ -1,9 +1,10 @@
 %%
 import_signal
+wave1 = wave1(1: 70000);
 p = noiseModel(wave1, false,  true);
 
-wave2 = wave;
-inds = 1: length(wave);
+wave2 = wave1;
+inds = 1: length(wave1);
 post_processing
 
 %% Feedback
