@@ -1,11 +1,9 @@
-close all
-clear all
+%% Import signal from csv file
+%
+% Author: Rex
+%
 
-%% Load data
-%filename = 'GA7-15-98RPEARF';
-%filename = 'data/GA8-4-98LHPCF.csv'; % large noise
-%filename = 'MK3-7-96LAF';
-filename = 'trial_701 Tupaia Doughboy 9-27-2001 cricket';
+function [ wave ] = importSignal( filename )
 
 %rawData = csvread(, 1, 0);
 rawData = csvread(['data/', filename, '.csv'], 1, 0);
@@ -33,10 +31,10 @@ title 'Fourier transform of original wave'
 sigma = 100;
 % The higher scaling const is, the more precise will the later stage be
 % since the transition matrix is based on rounded integer signal strength
-wave1 = highPass(wave, Fs, sigma) * 1e5;
+wave = highPass(wave, Fs, sigma) * 1e5;
 
 figure
-plot(wave1);
+plot(wave);
 title 'after high pass'
 
 %% noise
