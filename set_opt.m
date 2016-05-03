@@ -7,11 +7,10 @@ opt = struct;
 
 % I/O
 %filename = 'GA7-15-98RPEARF';
-%filename = 'data/GA8-4-98LHPCF.csv'; % large noise
-%filename = 'MK3-7-96LAF';
-%filename = 'trial_701 Tupaia Doughboy 9-27-2001 cricket';
+%filename = 'data/GA8-4-98LHPCF.csv'; % large noises
 opt.inputFolderName = 'data';
-opt.inputFileName = 'MK3-7-96LAF';
+%opt.inputFileName = 'MK3-7-96LAF';
+opt.inputFileName = 'trial_701 Tupaia Doughboy 9-27-2001 cricket';
 
 opt.winSize = 20;
 opt.posteriorThreshold = 5;

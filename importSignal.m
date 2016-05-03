@@ -20,12 +20,12 @@ plot(wave);
 title 'original wave'
 
 Fs = 10000;
-[f, fLMS, nfft] = fourier(wave, Fs);
+%[f, fLMS, nfft] = fourier(wave, Fs);
 
-startFreq = round(50 / f(2)); % disregard low frequency region
-figure
-plot(f(startFreq: end), 2*abs(fLMS(startFreq: nfft/2+1)));
-title 'Fourier transform of original wave'
+%startFreq = round(50 / f(2)); % disregard low frequency region
+%figure
+%plot(f(startFreq: end), 2*abs(fLMS(startFreq: nfft/2+1)));
+%title 'Fourier transform of original wave'
 
 %% High pass
 sigma = 100;

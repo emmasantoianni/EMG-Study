@@ -3,12 +3,16 @@
 %
 % Author: Rex Ying
 %
-filename = 'MK3-7-96LAF';
-wave = importSignal('MK3-7-96LAF');
-p = noiseModel(wave1, false,  true);
 
-wave2 = wave1;
-inds = 1: length(wave1);
+% Change the name of the input csv file
+% The first column of the file 
+filename = 'MK3-7-96LAF';
+
+wave = importSignal(filename);
+p = noiseModel(wave, false,  true);
+
+wave2 = wave;
+inds = 1: length(wave2);
 post_processing
 
 %% Feedback
