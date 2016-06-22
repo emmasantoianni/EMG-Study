@@ -1,4 +1,4 @@
-function [ wave ] = importSignal( filename, plotWave )
+function [ wave ] = importSignal( opt, plotWave )
 %% Import signal from csv file
 %
 % Input:
@@ -13,15 +13,15 @@ if ~exist('plotWave', 'var')
 end
 
 %rawData = csvread(, 1, 0);
-rawData = csvread(['data/', filename, '.csv'], 1, 0);
+rawData = csvread([opt.inputFolderName, opt.inputFileName, '.csv'], 1, 0);
 
-fid = fopen(['data/', filename, '.csv']);
+fid = fopen([opt.inputFolderName, opt.inputFileName, '.csv']);
 header = textscan(fid,'%s %s %s %s %s %s %s %s', 1, 'delimiter',',');
 fclose(fid);
 
 %% processing
 
-wave = rawData(:, 1);
+wave = rawData(:, opt.channel);
 if plotWave
     figure
     plot(wave);

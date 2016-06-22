@@ -9,12 +9,9 @@
 set_opt;
 filename = opt.inputFileName;
 
-wave = importSignal(filename);
+wave = importSignal(opt);
 p = noiseModel(wave, false,  true);
-
-wave2 = wave;
-inds = 1: length(wave2);
-post_processing
+post_processing;
 
 %% Feedback
 noiseAll = [];

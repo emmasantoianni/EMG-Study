@@ -2,11 +2,7 @@ function [ p ] = noiseModel( wave1, extremaOnly, useContinuous, noiseRegion, noi
 %NOISEMODEL Noise model using bigrams
 %   Detailed explanation goes here
 
-%% Model params
-%range = [6000, 15000];
-%noise = wave1(range(1): range(2));
-%noise = wave1;
-
+%% Model paramsp = noiseModel(wave, false,  true);
 if ~exist('useContinuous', 'var')
     useContinuous = true;
 end

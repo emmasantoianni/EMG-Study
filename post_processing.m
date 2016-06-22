@@ -14,6 +14,7 @@
 % figure
 % plot(pw)
 
+inds = 1: length(wave);
 % left and right window size
 lwSize = 40;
 rwSize = 40;
@@ -40,17 +41,17 @@ posterior = lscore - rscore;
 posterior = abs(posterior);
 %posterior(posterior == 1) = 0;
 plot(inds(1: end - 1), posterior);
-csvwrite(['data/', filename, '-posterior.csv'], posterior);
+csvwrite([opt.inputFolderName, opt.inputFileName, '-EMG-output.csv'], posterior);
 
 %% Isolate signal regions
 
 % posterior threshold
-postThresh = 5;
+postThresh = opt.posteriorThreshold;
 
 % we allow this amount of zero entries within the signal. If the gap is
 % larger than that, we split the signal into two.
 %allowedGap = uint32(wSize );
-allowedGap = 60;
+allowedGap = opt.allowedGap;
 
 
 nSignalRegions = 0;
@@ -147,7 +148,11 @@ offsets = offsets(1: nSignalRegions);
 signalLengths = offsets - onsets;
 
 %signalLenThresh = 1000;
-signalLenThresh = mean(signalLengths) - 0.5 * std(signalLengths);
+if exist('opt.signalLenThresh', 'var')
+    signalLenThresh = opt.signalLenThresh = 1000;
+else
+    signalLenThresh = mean(signalLengths) - 0.5 * std(signalLengths);
+end
 intervalThresh = 200;
 
 ind = 2;
@@ -168,6 +173,7 @@ end
 
 % update based on onsets/offsets
 nSignalRegions = ind - 1;
+
 
 figure
 hist(signalLengths);
@@ -197,4 +203,4 @@ signalLengths = offsets - onsets;
 visualizeResults( wave2, onsets, offsets, nSignalRegions, signalRegionCategories );
 
 %% save onsets/offsets
-csvwrite(['data/', filename, '_result.csv'], [onsets, offsets]);
+csvwrite([opt.inputFolderName, opt.inputFileName, '-Onoff-output.csv'], [onsets, offsets]);

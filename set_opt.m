@@ -6,23 +6,33 @@
 opt = struct;
 
 % I/O
-opt.inputFolderName = 'data';
-%opt.inputFileName = 'MK3-7-96LAF';
-%opt.inputFileName = 'trial_701 Tupaia Doughboy 9-27-2001 cricket';
+opt.inputFolderName = 'data/';
+% enter file name for analysis here,then specify the colmn number (channel)
+% for analysis at opt.channel
 opt.inputFileName = 'GA7-15-98RPEARF';
+opt.channel = 1;
 
+opt.debug = true;
+
+% winSize is the number of points we use to average for postprocessing
+% posterior threshold value, when greater than 5, will yield a less
+% conservative estimate of EMG signal
 opt.winSize = 20;
 opt.posteriorThreshold = 5;
 
-% we allow this amount of zero entries within the signal. If the gap is
+% we allow this amount of zero entries within the signal for including the 
+% silent period. If the gap is
 % larger than that, we split the signal into two.
 opt.allowedGap = 120;
 
 % optional, inferred by default
-signalLenThresh = 1000;
-intervalThresh = 200;
+% signalLenThresh is sensitive to sampling frequency.  A signalLenThresh
+% of 1000 will delete all EMG signal that is less than 1000 data points.
+% This gets rid of short duration orphan spikes.  A lower signalLenThresh
+% is recommended for sampling rates less than 10 Khz.
+opt.signalLenThresh = 1000;
 
 
-% for feedback
-% the 100 points after offset is considered ambiguous and not included in noise
+% the 100 points after offset is considered ambiguous and not included in
+% noise during feedback steps
 opt.ambiguousLen = 100;
