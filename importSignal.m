@@ -1,9 +1,16 @@
+function [ wave ] = importSignal( filename, plotWave )
 %% Import signal from csv file
+%
+% Input:
+%   plot: if true, plot the signals before and after high-pass filter
+%       By default, it is set to false.
 %
 % Author: Rex
 %
 
-function [ wave ] = importSignal( filename )
+if ~exist('plotWave', 'var')
+    plotWave = false;
+end
 
 %rawData = csvread(, 1, 0);
 rawData = csvread(['data/', filename, '.csv'], 1, 0);
@@ -15,9 +22,11 @@ fclose(fid);
 %% processing
 
 wave = rawData(:, 1);
-figure
-plot(wave);
-title 'original wave'
+if plotWave
+    figure
+    plot(wave);
+    title 'original wave'
+end
 
 Fs = 10000;
 %[f, fLMS, nfft] = fourier(wave, Fs);
@@ -33,9 +42,11 @@ sigma = 100;
 % since the transition matrix is based on rounded integer signal strength
 wave = highPass(wave, Fs, sigma) * 1e5;
 
-figure
-plot(wave);
-title 'after high pass'
+if plotWave
+    figure
+    plot(wave);
+    title 'after high pass'
+end
 
 %% noise
 % noiseSample = wave(1000: 4500);

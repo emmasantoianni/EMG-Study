@@ -5,7 +5,7 @@ extremaOnly = false;
 if extremaOnly
     [wave2, inds] = extractExtrema(wave1);
 else
-    wave2 = wave1;
+    wave2 = wave;
     inds = 1: length(wave2);
 end
 
@@ -50,7 +50,7 @@ title(sprintf('Approximate noise intervals with window size %d', hwSize*2 + 1));
 hold on
 noiseAll = [];
 for i = 1: size(approxNoiseIntervals, 1)
-    noise = wave1(approxNoiseIntervals(i, 1): approxNoiseIntervals(i, 2));
+    noise = wave(approxNoiseIntervals(i, 1): approxNoiseIntervals(i, 2));
     time = (approxNoiseIntervals(i, 1): approxNoiseIntervals(i, 2))';
     plot(time, noise);
     noiseAll = [noiseAll; noise];
@@ -68,7 +68,7 @@ if extremaOnly
     noiseAll = extractExtrema(noiseAll);
     [wave2, inds] = extractExtrema(wave1);
 else
-    wave2 = wave1;
+    wave2 = wave;
     inds = 1: length(wave2);
 end
 
@@ -80,7 +80,7 @@ diffOffset = min(diffNoise) - 1;
 n = round(max(diffNoise - diffOffset));
 TM = zeros(n, n);
 for i = 1: length(noiseIntervals)
-    noise = wave1(noiseIntervals(i, 1): noiseIntervals(i, 2));
+    noise = wave(noiseIntervals(i, 1): noiseIntervals(i, 2));
     
     diffNoise = diff(round(noise)) - diffOffset;
     %plot(diffNoise);
@@ -96,8 +96,10 @@ for i = 1: length(noiseIntervals)
     end
 end
 figure
-surf(-20:20, -20:20, TM, 'EdgeColor','none','LineStyle','none','FaceLighting','phong');
+surf(diffOffset:n+diffOffset-1, diffOffset:n+diffOffset-1, TM, 'EdgeColor','none','LineStyle','none');
+colormap parula
 %scatter(points(1, :), points(2, :), '.');
+
 
 %% For continuous model (with normal distribution assumption):
 points = zeros(2, length(wave2));
@@ -165,8 +167,15 @@ else
     end
 end
 
-surf(-200:139, -200:139, TMallMat, 'EdgeColor','none','LineStyle','none','FaceLighting','phong');
+figure
+lowIdx = round(diffOffsetAll);
+surf(lowIdx:nAll + lowIdx - 1, lowIdx:nAll + lowIdx - 1, TMallMat, 'EdgeColor','none','LineStyle','none','FaceLighting','phong');
+axis([lowIdx, nAll + lowIdx - 1, lowIdx, nAll + lowIdx - 1, 0, 800]);
+colormap parula
 
+figure
+imagesc(lowIdx:nAll + lowIdx - 1, lowIdx:nAll + lowIdx - 1, TMallMat == 0);
+colormap gray
 %%
 
 disp('Computing probability for entire sequence ...');

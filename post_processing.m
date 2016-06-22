@@ -140,7 +140,6 @@ offsets = offsets(1: nSignalRegions);
 % onsets = onsets(1: nSignalRegions);
 % offsets = offsets(1: nSignalRegions);
 
-%% visualize
 %visualizeResults( wave2, onsets, offsets, nSignalRegions );
 
 

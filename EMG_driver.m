@@ -6,7 +6,8 @@
 
 % Change the name of the input csv file
 % The first column of the file 
-filename = 'MK3-7-96LAF';
+set_opt;
+filename = opt.inputFileName;
 
 wave = importSignal(filename);
 p = noiseModel(wave, false,  true);
