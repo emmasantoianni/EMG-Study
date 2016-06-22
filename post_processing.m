@@ -32,15 +32,20 @@ for i = lwSize + 1: length(p) - rwSize
     rscore(i) = sum(log(r) <= threshold);
 end
 
-figure
-subplot(2, 1, 1);
-plot(inds(1: end - 1), lscore);
-subplot(2, 1, 2);
+if opt.debug
+    figure
+    subplot(2, 1, 1);
+    plot(inds(1: end - 1), lscore);
+    subplot(2, 1, 2);
+end
 posterior = lscore - rscore;
 % sign does not matter here
 posterior = abs(posterior);
 %posterior(posterior == 1) = 0;
-plot(inds(1: end - 1), posterior);
+if opt.debug
+    plot(inds(1: end - 1), posterior);
+    title('Posterior');
+end
 csvwrite([opt.inputFolderName, opt.inputFileName, '-EMG-output.csv'], posterior);
 
 %% Isolate signal regions
@@ -141,25 +146,24 @@ offsets = offsets(1: nSignalRegions);
 % onsets = onsets(1: nSignalRegions);
 % offsets = offsets(1: nSignalRegions);
 
-%visualizeResults( wave2, onsets, offsets, nSignalRegions );
+%visualizeResults( wave, onsets, offsets, nSignalRegions );
 
 
 %% Merge chewing cycles / remove outliers
 signalLengths = offsets - onsets;
 
-%signalLenThresh = 1000;
+signalLenThresh = 1000;
 if exist('opt.signalLenThresh', 'var')
-    signalLenThresh = opt.signalLenThresh = 1000;
+    signalLenThresh = opt.signalLenThresh;
 else
     signalLenThresh = mean(signalLengths) - 0.5 * std(signalLengths);
 end
-intervalThresh = 200;
 
 ind = 2;
 while ind <= length(onsets)
 %     if signalLengths(ind-1) < signalLenThresh && signalLengths(ind) > signalLenThresh && ...
 %             onsets(ind) - offsets(ind-1) < intervalThresh
-    if signalLengths(ind-1) < signalLenThresh && onsets(ind) - offsets(ind-1) < intervalThresh
+    if onsets(ind) - offsets(ind-1) < opt.allowedGap
         offsets(ind-1) = offsets(ind);
         signalLengths(ind-1) = offsets(ind-1) - onsets(ind-1);
         
@@ -171,13 +175,25 @@ while ind <= length(onsets)
     end
 end
 
+i = 1;
+while i <= length(onsets)
+    if offsets(i) - onsets(i) < signalLenThresh
+        onsets(i) = [];
+        offsets(i) = [];
+        signalLengths(i) = [];
+    else
+        i = i+1;
+    end
+end
+
 % update based on onsets/offsets
-nSignalRegions = ind - 1;
+nSignalRegions = length(onsets);
 
-
-figure
-hist(signalLengths);
-title('Histogram of signal lengths');
+if opt.debug
+    figure
+    hist(signalLengths);
+    title('Histogram of signal lengths');
+end
 
 %% categorize signals
 mu = mean(signalLengths);
@@ -186,7 +202,7 @@ sigma = std(signalLengths);
 % max amplitude
 maxAmp = zeros(size(signalLengths));
 for i = 1: length(signalLengths)
-    maxAmp(i) = max(abs(wave2(onsets(i): offsets(i))));
+    maxAmp(i) = max(abs(wave(onsets(i): offsets(i))));
 end
 muMaxAmp = mean(maxAmp);
 threshAmp = muMaxAmp - std(maxAmp) * 2;
@@ -200,7 +216,7 @@ end
 
 signalLengths = offsets - onsets;
 
-visualizeResults( wave2, onsets, offsets, nSignalRegions, signalRegionCategories );
+visualizeResults( wave, onsets, offsets, nSignalRegions, signalRegionCategories );
 
 %% save onsets/offsets
 csvwrite([opt.inputFolderName, opt.inputFileName, '-Onoff-output.csv'], [onsets, offsets]);

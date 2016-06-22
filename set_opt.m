@@ -11,7 +11,7 @@ opt.inputFolderName = 'data/';
 % for analysis at opt.channel
 opt.inputFileName = 'GA7-15-98RPEARF';
 opt.channel = 1;
-
+% set to true if we want to generate intermediate figures at each step
 opt.debug = true;
 
 % winSize is the number of points we use to average for postprocessing
@@ -20,10 +20,10 @@ opt.debug = true;
 opt.winSize = 20;
 opt.posteriorThreshold = 5;
 
-% we allow this amount of zero entries within the signal for including the 
+% we allow this amount of zero entries within the signal for including a 
 % silent period. If the gap is
 % larger than that, we split the signal into two.
-opt.allowedGap = 120;
+opt.allowedGap = 400;
 
 % optional, inferred by default
 % signalLenThresh is sensitive to sampling frequency.  A signalLenThresh

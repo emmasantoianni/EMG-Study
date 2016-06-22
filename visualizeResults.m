@@ -1,4 +1,4 @@
-function [ ] = visualizeResults( wave, onsets, offsets, nSignalRegions, categories )
+function [ ] = visualizeResults( wave, onsets, offsets, nSignalRegions, categories, opt )
 %VISUALIZERESULTS Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -55,11 +55,11 @@ end
 legend(legendHandles, legendStr);
 
 hold off
-title('singals classified');
+title('signals classified');
 
 figure
-%subplot(2, 1, 1);
 plot(wave, 'Color', signalColor);
+title('Original Raw Data');
 
 end
 
