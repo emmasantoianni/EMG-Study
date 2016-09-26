@@ -21,11 +21,11 @@ for i = 1: length(offsets) - 1
     if (onsets(i+1) - offsets(i) < 2 * ambiguousLen)
         continue;
     end
-    noiseAll = [noiseAll; wave1(offsets(i) + ambiguousLen: onsets(i + 1) - ambiguousLen)];
+    noiseAll = [noiseAll; wave(offsets(i) + ambiguousLen: onsets(i + 1) - ambiguousLen)];
 end
 
 % noise intervals
 noiseIntervals = [offsets(1: length(offsets) - 1) + ambiguousLen, onsets(2: length(onsets)) - ambiguousLen];
 
-p = noiseModel(wave1, false, false, noiseAll, noiseIntervals);
+p = noiseModel(wave, false, false, noiseAll, noiseIntervals);
 post_processing

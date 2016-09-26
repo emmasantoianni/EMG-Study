@@ -13,35 +13,35 @@ function [ noiseIntervals ] = roughNoise( emg, inds, hwSize )
 
 % TODO: multiscale
 
-emg = integrateEMG(emg, hwSize);
-
-figure
-plot(inds(hwSize + (1: length(emg))), emg);
-
-lb = 1;
-ub = 25;
-% k: number of moving horizontal lines tried
-k = ub - lb;
-step = 0.1; 
-numIntersect = zeros(k / step + 1, 1);
-count = 0;
-for i = 1: step: k
-    count = count + 1;
-    numIntersect(count) = sum(emg > (i - 1) & emg < i);
-end
-diffNum = diff(numIntersect);
-
-figure
-hold on
-plot(1: step: ub, numIntersect, 'b');
-plot((1: step: ub - step) + step / 2, diffNum / step, 'm');
-legend('number of intersections', 'derivative');
-hold off
-
-[~, ind] = min(diffNum);
-tolerance = 0.2;
-threshold = ind * step + 1 - step/2 + tolerance;
-threshold = 7;
+% emg = integrateEMG(emg, hwSize);
+% 
+% figure
+% plot(inds(hwSize + (1: length(emg))), emg);
+% 
+% lb = 1;
+% ub = 25;
+% % k: number of moving horizontal lines tried
+% k = ub - lb;
+% step = 0.1; 
+% numIntersect = zeros(k / step + 1, 1);
+% count = 0;
+% for i = 1: step: k
+%     count = count + 1;
+%     numIntersect(count) = sum(emg > (i - 1) & emg < i);
+% end
+% diffNum = diff(numIntersect);
+% 
+% figure
+% hold on
+% plot(1: step: ub, numIntersect, 'b');
+% plot((1: step: ub - step) + step / 2, diffNum / step, 'm');
+% legend('number of intersections', 'derivative');
+% hold off
+% 
+% [~, ind] = min(diffNum);
+% tolerance = 0.2;
+% threshold = ind * step + 1 - step/2 + tolerance;
+[ threshold, ~ ] = thextonizer( emg );
 fprintf('Threshold set at: %d\n', threshold);
 
 %% use threshold to find noise regions

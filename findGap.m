@@ -17,7 +17,7 @@ if ~forward && ~strcmp(direction, 'before')
 end
 
 function res = isG(x)
-    if abs(x) <= 1
+    if abs(x) <= 4
         res = 1;
     else
         res = 0;

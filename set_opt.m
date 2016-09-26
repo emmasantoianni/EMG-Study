@@ -9,7 +9,7 @@ opt = struct;
 opt.inputFolderName = 'data/';
 % enter file name for analysis here,then specify the colmn number (channel)
 % for analysis at opt.channel
-opt.inputFileName = 'GA7-15-98RPEARF';
+opt.inputFileName = 'M fuscata 853 9-3-98 LA LMS';
 opt.channel = 1;
 % set to true if we want to generate intermediate figures at each step
 opt.debug = true;

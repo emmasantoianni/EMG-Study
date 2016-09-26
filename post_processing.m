@@ -76,9 +76,9 @@ for i = 1: length(posterior) - allowedGap
         onsetStart = findGap(posterior, i, allowedGap + 1, 'before');
         onsets(nSignalRegions) = onsetStart;
     % transfer out of signal region:
-    % When the values are less than 4 in allowed gap, followed by a
-    % sequence of zeros
-    elseif inSignal && ~any(seg >= postThresh) && ~any(posterior(i + allowedGap: i + allowedGap))
+    % When the values are less than 4 in allowed gap
+    % followed by a sequence of zeros
+    elseif inSignal && ~any(seg >= postThresh) %&& ~any(posterior(i + allowedGap: i + allowedGap))
         inSignal = false;
         
         % if the length of this detected signal is too insignificant,
@@ -152,12 +152,12 @@ offsets = offsets(1: nSignalRegions);
 %% Merge chewing cycles / remove outliers
 signalLengths = offsets - onsets;
 
-signalLenThresh = 1000;
-if exist('opt.signalLenThresh', 'var')
-    signalLenThresh = opt.signalLenThresh;
-else
-    signalLenThresh = mean(signalLengths) - 0.5 * std(signalLengths);
-end
+signalLenThresh = 100;
+% if exist('opt.signalLenThresh', 'var')
+%     signalLenThresh = opt.signalLenThresh;
+% else
+%     signalLenThresh = mean(signalLengths) - 0.5 * std(signalLengths);
+% end
 
 ind = 2;
 while ind <= length(onsets)
